@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="An interactive neural map of Prisma AIRS capabilities and their internal relationships."
+    />
+    <meta name="theme-color" content="#05070c" />
+    <title>Prisma AIRS Neural Map</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2305070c'/%3E%3Ccircle cx='32' cy='32' r='10' fill='%23ff4f64'/%3E%3Cg fill='none' stroke='%2338d9ff' stroke-width='3'%3E%3Cpath d='M32 22V8M22 28 10 20M42 28l12-8M22 37 9 45M42 37l13 8M32 42v14'/%3E%3C/g%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-glow" aria-hidden="true"></div>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <span class="brand-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </span>
+          <div>
+            <p class="kicker">PRISMA AIRS</p>
+            <h1>Neural capability map</h1>
+          </div>
+        </div>
+        <div class="scope-badge">
+          <span class="scope-dot"></span>
+          Prisma-only scope
+        </div>
+      </header>
+
+      <main class="main-grid">
+        <section class="map-workspace" aria-label="Prisma AIRS capability network">
+          <div class="toolbar-row">
+            <div class="lens-tabs" role="tablist" aria-label="Network lenses">
+              <button class="lens-tab is-active" role="tab" aria-selected="true" data-lens="overview">
+                Platform
+              </button>
+              <button class="lens-tab" role="tab" aria-selected="false" data-lens="runtime">
+                Runtime path
+              </button>
+              <button class="lens-tab" role="tab" aria-selected="false" data-lens="agent">
+                Agent path
+              </button>
+              <button class="lens-tab" role="tab" aria-selected="false" data-lens="lifecycle">
+                AI lifecycle
+              </button>
+            </div>
+            <button class="reset-button" id="resetView" type="button">Reset focus</button>
+          </div>
+
+          <div class="network-frame">
+            <div class="network-caption" aria-live="polite">
+              <span id="lensIndex">01</span>
+              <div>
+                <strong id="lensTitle">One platform, modular capabilities</strong>
+                <p id="lensDescription">Select a neuron to inspect its role and documented AIRS connections.</p>
+              </div>
+            </div>
+
+            <svg
+              id="network"
+              class="network"
+              viewBox="0 0 1200 760"
+              role="group"
+              aria-label="Interactive Prisma AIRS neuron network"
+            >
+              <defs>
+                <filter id="softGlow" x="-80%" y="-80%" width="260%" height="260%">
+                  <feGaussianBlur stdDeviation="7" result="blur" />
+                  <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+                </filter>
+                <filter id="strongGlow" x="-120%" y="-120%" width="340%" height="340%">
+                  <feGaussianBlur stdDeviation="13" result="blur" />
+                  <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+                </filter>
+                <radialGradient id="coreGradient" cx="36%" cy="30%">
+                  <stop offset="0" stop-color="#fff9fa" />
+                  <stop offset="0.28" stop-color="#ff6d7e" />
+                  <stop offset="1" stop-color="#ff334f" />
+                </radialGradient>
+                <marker id="edgeArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+                </marker>
+              </defs>
+              <g id="ambientLayer" aria-hidden="true"></g>
+              <g id="edgeLayer" aria-hidden="true"></g>
+              <g id="signalLayer" aria-hidden="true"></g>
+              <g id="nodeLayer"></g>
+            </svg>
+
+            <div class="map-legend" aria-label="Connection legend">
+              <span><i class="legend-line data"></i>Data flow</span>
+              <span><i class="legend-line policy"></i>Policy</span>
+              <span><i class="legend-line lifecycle"></i>Lifecycle</span>
+              <span><i class="legend-line telemetry"></i>Telemetry</span>
+              <span><i class="legend-line structure"></i>Capability</span>
+            </div>
+          </div>
+        </section>
+
+        <aside class="detail-panel" id="detailPanel" aria-live="polite">
+          <div class="detail-topline">
+            <span id="detailCluster" class="cluster-label">PLATFORM CORE</span>
+            <span id="detailStatus" class="status-pill">DOCUMENTED</span>
+          </div>
+          <div class="detail-orbit" aria-hidden="true">
+            <span id="detailGlyph">A</span>
+          </div>
+          <p class="detail-eyebrow" id="detailEyebrow">Unified AI security</p>
+          <h2 id="detailTitle">Prisma AIRS</h2>
+          <p class="detail-summary" id="detailSummary"></p>
+
+          <div class="detail-section">
+            <h3>Primary role</h3>
+            <p id="detailRole"></p>
+          </div>
+
+          <div class="detail-section">
+            <h3>Key functions</h3>
+            <ul id="detailFacts" class="fact-list"></ul>
+          </div>
+
+          <div class="detail-section connection-section">
+            <div class="section-heading-row">
+              <h3>Internal connections</h3>
+              <span id="connectionCount">0</span>
+            </div>
+            <div id="connectionList" class="connection-list"></div>
+          </div>
+
+          <a id="sourceLink" class="source-link" href="#" target="_blank" rel="noreferrer">
+            <span>Open official documentation</span>
+            <span aria-hidden="true">↗</span>
+          </a>
+        </aside>
+      </main>
+
+      <footer class="footer-bar">
+        <p>Interactive concept demo · Prisma AIRS capabilities only</p>
+        <p>Source set: official Palo Alto Networks documentation · verified 08 Oct 2026</p>
+      </footer>
+    </div>
+    <script src="./app.js" defer></script>
+  </body>
+</html>
