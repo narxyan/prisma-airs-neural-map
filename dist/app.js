@@ -454,6 +454,7 @@ function applyVisualState() {
     element.classList.toggle("is-focused", id === focusId);
     element.classList.toggle("is-related", Boolean(focusId) && relatedNodes.has(id));
     element.classList.toggle("is-muted", Boolean(focusId) && id !== focusId && !relatedNodes.has(id));
+    element.classList.toggle("is-view-active", !focusId && viewNodes.has(id));
     element.classList.toggle("is-view-muted", !focusId && !viewNodes.has(id));
   });
 

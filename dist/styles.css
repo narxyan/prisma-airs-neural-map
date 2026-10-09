@@ -103,6 +103,8 @@ button { color: inherit; }
   pointer-events: auto;
 }
 .view-tab {
+  position: relative;
+  --tab-color: var(--gateway);
   min-height: 42px;
   padding: 0 14px;
   white-space: nowrap;
@@ -115,8 +117,33 @@ button { color: inherit; }
   cursor: pointer;
   transition: color .2s ease, border-color .2s ease, background .2s ease;
 }
+.view-tab[data-view="runtime"] { --tab-color: var(--runtime); }
+.view-tab[data-view="agent"] { --tab-color: var(--agent); }
+.view-tab[data-view="lifecycle"] { --tab-color: var(--lifecycle); }
 .view-tab:hover { color: #fff; background: rgba(255,255,255,.035); }
-.view-tab.is-active { color: #fff; border-color: rgba(3,192,232,.28); background: rgba(3,192,232,.09); }
+.view-tab.is-active {
+  color: #fff;
+  border-color: color-mix(in srgb, var(--tab-color) 68%, white 10%);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--tab-color) 18%, transparent), rgba(255,255,255,.035)),
+    rgba(4,10,24,.88);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--tab-color) 22%, transparent),
+    0 0 20px color-mix(in srgb, var(--tab-color) 24%, transparent),
+    inset 0 0 18px color-mix(in srgb, var(--tab-color) 12%, transparent);
+  text-shadow: 0 0 12px color-mix(in srgb, var(--tab-color) 42%, transparent);
+}
+.view-tab.is-active::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 4px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--tab-color);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--tab-color) 78%, transparent);
+}
 
 .camera-controls {
   min-height: 58px;
@@ -174,12 +201,12 @@ button { color: inherit; }
 .edge-path.lifecycle { stroke: var(--lifecycle); }
 .edge-path.telemetry { stroke: var(--telemetry); stroke-dasharray: 2 6; }
 .edge-path.capability { stroke: #9eabc2; stroke-dasharray: 4 8; }
-.edge-path.is-lens { opacity: .34; stroke-width: 1.35; }
+.edge-path.is-lens { opacity: .68; stroke-width: 1.65; }
 .edge-path.is-focus { opacity: .96; stroke-width: 2.2; filter: url(#linkGlow); }
 .edge-path.is-muted { opacity: .025; }
 
 .edge-label-group { opacity: 0; transition: opacity .2s ease; }
-.edge-label-group.is-lens { opacity: .48; }
+.edge-label-group.is-lens { opacity: .82; }
 .edge-label-group.is-focus { opacity: 1; }
 .edge-label-bg { fill: rgba(3,6,14,.83); stroke: rgba(158,179,216,.2); stroke-width: 1; }
 .edge-label-text {
@@ -213,6 +240,7 @@ button { color: inherit; }
 }
 .space-node.is-view-muted { opacity: .38; }
 .space-node.is-muted { opacity: .17; }
+.space-node.is-view-active { opacity: 1; filter: saturate(1.22); }
 
 .node-prism {
   position: relative;
@@ -320,6 +348,18 @@ button { color: inherit; }
 
 .space-node.is-platform .node-face { background: linear-gradient(150deg, rgba(21,40,81,.98), rgba(5,10,24,.98)); }
 .space-node.is-platform .node-label strong { font-size: 14px; }
+.space-node.is-view-active .node-face {
+  border-color: color-mix(in srgb, var(--node-color) 74%, white 8%);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--node-color) 42%, transparent),
+    0 0 20px color-mix(in srgb, var(--node-color) 38%, transparent),
+    0 15px 30px rgba(0,0,0,.38);
+}
+.space-node.is-view-active .node-label {
+  border-color: color-mix(in srgb, var(--node-color) 62%, transparent);
+  background: rgba(4,8,18,.9);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--node-color) 18%, transparent);
+}
 
 .level-legend {
   position: absolute;
