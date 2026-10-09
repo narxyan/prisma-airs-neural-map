@@ -201,12 +201,12 @@ button { color: inherit; }
 .edge-path.lifecycle { stroke: var(--lifecycle); }
 .edge-path.telemetry { stroke: var(--telemetry); stroke-dasharray: 2 6; }
 .edge-path.capability { stroke: #9eabc2; stroke-dasharray: 4 8; }
-.edge-path.is-lens { opacity: .68; stroke-width: 1.65; }
+.edge-path.is-lens { opacity: .94; stroke-width: 2.05; filter: url(#linkGlow); }
 .edge-path.is-focus { opacity: .96; stroke-width: 2.2; filter: url(#linkGlow); }
 .edge-path.is-muted { opacity: .025; }
 
 .edge-label-group { opacity: 0; transition: opacity .2s ease; }
-.edge-label-group.is-lens { opacity: .82; }
+.edge-label-group.is-lens { opacity: 1; }
 .edge-label-group.is-focus { opacity: 1; }
 .edge-label-bg { fill: rgba(3,6,14,.83); stroke: rgba(158,179,216,.2); stroke-width: 1; }
 .edge-label-text {
@@ -252,7 +252,8 @@ button { color: inherit; }
 }
 .space-node:hover .node-prism,
 .space-node:focus-visible .node-prism,
-.space-node.is-focused .node-prism { transform: rotateX(-4deg) rotateY(7deg) translateY(-2px); }
+.space-node.is-focused .node-prism,
+.space-node.is-view-active .node-prism { transform: rotateX(-4deg) rotateY(7deg) translateY(-2px); }
 
 .node-face {
   position: absolute;
@@ -280,7 +281,8 @@ button { color: inherit; }
   transition: transform .55s ease;
 }
 .space-node:hover .node-face::before,
-.space-node.is-focused .node-face::before { transform: translateX(130%); }
+.space-node.is-focused .node-face::before,
+.space-node.is-view-active .node-face::before { transform: translateX(130%); }
 .node-face img { width: 100%; height: 100%; display: block; object-fit: contain; }
 
 .node-side-right,
@@ -349,16 +351,20 @@ button { color: inherit; }
 .space-node.is-platform .node-face { background: linear-gradient(150deg, rgba(21,40,81,.98), rgba(5,10,24,.98)); }
 .space-node.is-platform .node-label strong { font-size: 14px; }
 .space-node.is-view-active .node-face {
-  border-color: color-mix(in srgb, var(--node-color) 74%, white 8%);
+  border-color: color-mix(in srgb, var(--node-color) 82%, white 10%);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--node-color) 18%, transparent), rgba(255,255,255,.02) 50%),
+    linear-gradient(155deg, rgba(13,24,52,.98), rgba(4,9,22,.98));
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--node-color) 42%, transparent),
-    0 0 20px color-mix(in srgb, var(--node-color) 38%, transparent),
-    0 15px 30px rgba(0,0,0,.38);
+    0 0 0 2px color-mix(in srgb, var(--node-color) 54%, transparent),
+    0 0 34px color-mix(in srgb, var(--node-color) 76%, transparent),
+    0 0 112px color-mix(in srgb, var(--node-color) 40%, transparent),
+    0 15px 30px rgba(0,0,0,.4);
 }
 .space-node.is-view-active .node-label {
-  border-color: color-mix(in srgb, var(--node-color) 62%, transparent);
-  background: rgba(4,8,18,.9);
-  box-shadow: 0 0 12px color-mix(in srgb, var(--node-color) 18%, transparent);
+  border-color: color-mix(in srgb, var(--node-color) 78%, transparent);
+  background: rgba(4,8,18,.94);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--node-color) 34%, transparent);
 }
 
 .level-legend {

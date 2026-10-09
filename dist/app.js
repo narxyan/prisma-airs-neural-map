@@ -428,7 +428,7 @@ function rebuildSignals(edgeIds, focused) {
       height: 5.6,
       rx: 1,
       fill: FLOW_COLORS[edge.type],
-      opacity: focused ? 1 : .52,
+      opacity: focused ? 1 : .9,
       transform: "rotate(45)",
     });
     signalLayer.append(packet);
