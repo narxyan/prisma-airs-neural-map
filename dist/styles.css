@@ -609,11 +609,33 @@ button { color: inherit; }
 :root[data-theme="light"] .edge-path.is-focus { opacity: .98; }
 :root[data-theme="light"] .edge-path.is-muted { opacity: .04; }
 :root[data-theme="light"] .node-label { border-color: rgba(51,72,108,.16); box-shadow: 0 8px 22px rgba(49,69,105,.09); }
-:root[data-theme="light"] .node-face { box-shadow: 0 14px 28px rgba(38,54,86,.24), inset 0 0 0 1px rgba(255,255,255,.035); }
+:root[data-theme="light"] .node-face {
+  border-color: rgba(65,87,126,.22);
+  background:
+    linear-gradient(145deg, rgba(255,255,255,1), rgba(255,255,255,.76) 48%),
+    linear-gradient(155deg, #ffffff, #eaf1fc);
+  box-shadow: 0 14px 28px rgba(38,54,86,.18), inset 0 0 0 1px rgba(255,255,255,.92);
+}
+:root[data-theme="light"] .node-face::before {
+  background: linear-gradient(120deg, transparent 25%, color-mix(in srgb, var(--node-color) 12%, transparent) 43%, transparent 60%);
+}
+:root[data-theme="light"] .node-face img { filter: saturate(1.35) contrast(1.12) drop-shadow(0 2px 4px rgba(32,50,83,.12)); }
+:root[data-theme="light"] .space-node.is-platform .node-face img {
+  filter: brightness(0) saturate(100%) invert(34%) sepia(99%) saturate(3961%) hue-rotate(222deg) brightness(101%) contrast(101%) drop-shadow(0 2px 4px rgba(36,91,255,.18));
+}
+:root[data-theme="light"] .node-side-right,
+:root[data-theme="light"] .node-side-bottom {
+  background: color-mix(in srgb, var(--node-color) 24%, #dce7f7);
+  opacity: .7;
+}
 :root[data-theme="light"] .space-node.is-focused .node-face,
 :root[data-theme="light"] .space-node.is-related .node-face,
 :root[data-theme="light"] .space-node:hover .node-face,
 :root[data-theme="light"] .space-node:focus-visible .node-face {
+  border-color: color-mix(in srgb, var(--node-color) 70%, #ffffff);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--node-color) 12%, #ffffff), rgba(255,255,255,.98) 52%),
+    linear-gradient(155deg, #ffffff, #edf3fd);
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--node-color) 70%, transparent),
     0 0 26px color-mix(in srgb, var(--node-color) 68%, transparent),
