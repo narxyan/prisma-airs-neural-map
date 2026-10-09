@@ -4,9 +4,9 @@ const COLORS = {
   core: "#ffffff",
   gateway: "#03c0e8",
   runtime: "#377dff",
-  agent: "#9e75ff",
+  endpoint: "#43e6c5",
   lifecycle: "#ff9e57",
-  telemetry: "#73e6ff",
+  model: "#9e75ff",
 };
 
 const FLOW_COLORS = {
@@ -22,16 +22,16 @@ const A = "./assets/official/";
 const nodes = [
   {
     id: "airs", label: "Prisma AIRS", meta: "platform core", cluster: "core", glyph: "AIRS",
-    pos: [0, 0, 80], size: 92, asset: `${A}prisma-airs.svg`, important: true,
+    pos: [0, 0, 105], size: 78, asset: `${A}prisma-airs.svg`, important: true,
     eyebrow: "Unified AI security platform",
     summary: "A unified platform for discovering, assessing, and protecting AI applications, models, agents, data, and infrastructure.",
-    role: "Coordinate independently deployable AIRS capabilities while sharing policy, telemetry, and lifecycle context.",
-    facts: ["Gateway, Runtime, Red Teaming, and Supply Chain pillars", "Protection from development through deployment", "Inventory and agent-security context across the platform"],
+    role: "Coordinate the focused gateway, runtime, endpoint, red-team, and model-security paths shown in this map.",
+    facts: ["One platform across the AI lifecycle", "Shared protection and governance context", "Focused here on six core integration surfaces"],
     source: "https://docs.paloaltonetworks.com/prisma-airs/getting-started/prisma-airs-platform-architecture",
   },
   {
     id: "gateway", label: "AI Gateway", meta: "govern traffic", cluster: "gateway", glyph: "GW",
-    pos: [-310, -120, 35], size: 72, asset: `${A}gateway-governance.svg`, important: true,
+    pos: [-310, -155, 35], size: 58, asset: `${A}gateway-governance.svg`, important: true,
     eyebrow: "AI control plane",
     summary: "A unified control and data plane for routing, governing, and observing AI requests.",
     role: "Place consistent access, routing, cost, and security controls in the path of AI traffic.",
@@ -39,35 +39,8 @@ const nodes = [
     source: "https://docs.paloaltonetworks.com/prisma-airs/ai-gateway/ai-gateway-overview",
   },
   {
-    id: "workspaces", label: "Workspaces & keys", meta: "scope access", cluster: "gateway", glyph: "WK",
-    pos: [-515, -250, -105], size: 50, asset: `${A}gateway-controls.svg`,
-    eyebrow: "Scoped consumption",
-    summary: "Logical workspaces and security keys define who can reach AI resources and which policy applies.",
-    role: "Create isolation boundaries for teams and applications, then bind access, limits, and routing to scoped keys.",
-    facts: ["Keys inherit workspace controls", "Budgets and rate limits per workspace", "Reusable routing configurations"],
-    source: "https://docs.paloaltonetworks.com/prisma-airs/ai-gateway/ai-gateway-workspaces",
-  },
-  {
-    id: "guardrails", label: "Gateway guardrails", meta: "inline policy", cluster: "gateway", glyph: "GR",
-    pos: [-515, -25, 135], size: 54, asset: `${A}gateway-governance.svg`,
-    eyebrow: "Request and response policy",
-    summary: "Inline policies inspect requests and responses before traffic reaches its next hop.",
-    role: "Detect prompt injection, sensitive data, and topic violations, with optional deeper Runtime Security inspection.",
-    facts: ["Request and response checks", "Allow, block, or redact outcomes", "Can invoke AIRS Runtime Security"],
-    source: "https://docs.paloaltonetworks.com/prisma-airs/ai-gateway/ai-gateway-policies-profiles",
-  },
-  {
-    id: "gatewayObservability", label: "Gateway observability", meta: "measure traffic", cluster: "telemetry", glyph: "OBS",
-    pos: [-185, -285, -125], size: 48, asset: `${A}gateway-observability.svg`,
-    eyebrow: "Transaction visibility",
-    summary: "Analytics and logs track cost, tokens, latency, errors, cache behavior, and guardrail activity.",
-    role: "Make gateway traffic measurable and trace policy outcomes across workspaces.",
-    facts: ["Analytics, logs, and exports", "Original and transformed payload views", "Guardrail firing activity"],
-    source: "https://docs.paloaltonetworks.com/prisma-airs/ai-gateway/ai-gateway-observability",
-  },
-  {
     id: "runtime", label: "AI Runtime Security", meta: "enforce", cluster: "runtime", glyph: "RT",
-    pos: [295, -90, 45], size: 76, asset: `${A}runtime-prevention.svg`, important: true,
+    pos: [310, -135, 55], size: 60, asset: `${A}runtime-prevention.svg`, important: true,
     eyebrow: "Real-time enforcement",
     summary: "Detects and blocks AI-specific threats as traffic moves through applications and agents.",
     role: "Apply the same security intelligence through code-level API interception, network interception, or both.",
@@ -75,62 +48,17 @@ const nodes = [
     source: "https://docs.paloaltonetworks.com/prisma-airs/ai-runtime-security/airs-vm-firewall/ai-runtime-security-overview",
   },
   {
-    id: "securityProfiles", label: "Security profiles", meta: "define policy", cluster: "runtime", glyph: "SP",
-    pos: [75, -290, 105], size: 52, asset: `${A}runtime-visibility.svg`,
-    eyebrow: "Detection policy",
-    summary: "Reusable profiles select protections and define allow, block, masking, and latency behavior.",
-    role: "Configure the threat detectors and actions used by runtime scans and MCP security workflows.",
-    facts: ["Model, application, data, and agent protections", "Allow or block per protection", "Fail-open or fail-closed latency behavior"],
-    source: "https://docs.paloaltonetworks.com/prisma-airs/ai-runtime-security/airs-api/api-intercept-create-configure-security-profile",
-  },
-  {
-    id: "apiIntercept", label: "API Intercept", meta: "security in code", cluster: "runtime", glyph: "API",
-    pos: [510, -225, -95], size: 54, asset: `${A}gateway-api.svg`,
-    eyebrow: "Code-level enforcement",
-    summary: "A REST API and Python SDK embed prompt and response inspection directly in application logic.",
-    role: "Submit content to AIRS before an application processes a prompt or returns a model response.",
-    facts: ["Synchronous and asynchronous scanning", "REST and Python interfaces", "Named security profiles"],
-    source: "https://docs.paloaltonetworks.com/prisma-airs/ai-runtime-security/airs-api/ai-runtime-security-api-intercept-overview",
-  },
-  {
-    id: "networkIntercept", label: "Network Intercept", meta: "inline enforcement", cluster: "runtime", glyph: "NI",
-    pos: [540, -10, 150], size: 56, asset: `${A}runtime-platform.svg`,
-    eyebrow: "Network-level enforcement",
-    summary: "An inline deployment inspects AI traffic without requiring application-code changes.",
-    role: "Protect AI traffic at the network layer while sharing the platform's policy and detection intelligence.",
-    facts: ["Cloud, Kubernetes, and private deployment", "Works alongside API Intercept", "Inline allow and block outcomes"],
-    source: "https://docs.paloaltonetworks.com/prisma-airs/ai-runtime-security/airs-vm-firewall/ai-runtime-security-overview",
-  },
-  {
-    id: "scanEngine", label: "Scan engine & verdicts", meta: "analyze", cluster: "runtime", glyph: "SV",
-    pos: [250, 100, 180], size: 60, asset: `${A}model-inspection.svg`,
-    eyebrow: "Threat decision point",
-    summary: "Runtime inspection evaluates content against a selected profile and returns a security verdict and action.",
-    role: "Centralize AI threat analysis for API, gateway, and MCP-mediated workflows.",
-    facts: ["Prompt injection and data detection", "Agent, URL, code, and content controls", "Allow, block, mask, or fallback"],
-    source: "https://pan.dev/airs/",
-  },
-  {
-    id: "scanLogs", label: "Scan logs", meta: "retain evidence", cluster: "telemetry", glyph: "LOG",
-    pos: [515, 125, -90], size: 48, asset: `${A}runtime-visibility.svg`,
-    eyebrow: "Runtime evidence",
-    summary: "API scan records preserve application, profile, direction, verdict, and action details.",
-    role: "Provide investigation and validation evidence for runtime security decisions.",
-    facts: ["Benign and threat categorization", "Scan, profile, and application IDs", "Request-versus-response context"],
-    source: "https://docs.paloaltonetworks.com/prisma-airs/ai-runtime-security/airs-api/ai-runtime-security-intercept-scan-logs",
-  },
-  {
-    id: "inventory", label: "AI Inventory", meta: "discover", cluster: "telemetry", glyph: "INV",
-    pos: [-420, 195, -75], size: 62, asset: `${A}model-visibility.svg`, important: true,
-    eyebrow: "AI asset awareness",
-    summary: "Discovers AI models, endpoints, datasets, and agents, then shows dependencies and security coverage.",
-    role: "Identify what exists, where risk is concentrated, and which AIRS workflow should be initiated next.",
-    facts: ["Asset dependency and coverage maps", "Can initiate red-team coverage", "Recommends runtime protection"],
-    source: "https://docs.paloaltonetworks.com/prisma-airs/ai-inventory/agent-discovery/ai-agent-discovery-with-cortex-cloud",
+    id: "endpointSecurity", label: "Endpoint Security", meta: "secure agent endpoints", cluster: "endpoint", glyph: "AES",
+    pos: [325, 175, -30], size: 54, asset: `${A}runtime-platform.svg`, important: true,
+    eyebrow: "Agentic endpoint protection",
+    summary: "Cortex Agentic Endpoint Security protects the developer endpoint where autonomous coding agents, extensions, and local AI artifacts operate.",
+    role: "Pair endpoint discovery and local enforcement with Prisma AIRS Runtime Security inspection for AI coding-agent activity.",
+    facts: ["Discovers agents, extensions, and AI artifacts", "Assesses endpoint risk and applies local policy", "Integrates with AIRS Runtime Security for AI traffic protection"],
+    source: "https://www.paloaltonetworks.com/blog/ai-security/securing-the-ai-coding-frontier-prisma-airs-agentic-endpoint-security/",
   },
   {
     id: "redTeam", label: "AI Red Teaming", meta: "stress test", cluster: "lifecycle", glyph: "RTM",
-    pos: [-165, 275, 95], size: 64, asset: `${A}redteam-authentication.svg`, important: true,
+    pos: [-285, 185, 60], size: 56, asset: `${A}redteam-authentication.svg`, important: true,
     eyebrow: "Adversarial validation",
     summary: "Automated scans test applications, models, and agents against real-world attack techniques.",
     role: "Turn discovered AI endpoints into targets, run attacks, and feed findings back into protection decisions.",
@@ -138,115 +66,52 @@ const nodes = [
     source: "https://docs.paloaltonetworks.com/prisma-airs/ai-red-teaming/identify-ai-system-risks-with-ai-red-teaming",
   },
   {
-    id: "supplyChain", label: "AI Supply Chain", meta: "validate artifacts", cluster: "lifecycle", glyph: "SC",
-    pos: [105, 300, -85], size: 62, asset: `${A}redteam-continuous.svg`, important: true,
-    eyebrow: "Pre-deployment assurance",
-    summary: "Protects models and agent artifacts before they enter production AI pipelines.",
-    role: "Stop malicious or unsafe AI artifacts before runtime controls ever need to process them.",
-    facts: ["Model and agent artifact coverage", "Backdoor and unsafe-code analysis", "Policy-driven deployment decisions"],
-    source: "https://docs.paloaltonetworks.com/prisma-airs/getting-started/prisma-airs-platform-architecture",
-  },
-  {
-    id: "modelSecurity", label: "Model Security", meta: "scan models", cluster: "lifecycle", glyph: "MS",
-    pos: [350, 340, 120], size: 54, asset: `${A}model-inspection.svg`,
+    id: "modelSecurity", label: "Model Security", meta: "scan models", cluster: "model", glyph: "MS",
+    pos: [0, 235, -90], size: 54, asset: `${A}model-inspection.svg`, important: true,
     eyebrow: "Model artifact scanning",
     summary: "Scans model files for malicious code, backdoors, unsafe deserialization, and policy violations.",
     role: "Gate model artifacts before they are approved for use or deployment.",
     facts: ["Security groups, rules, and scans", "Blocking and non-blocking rules", "File-level violations and metadata"],
     source: "https://docs.paloaltonetworks.com/prisma-airs/ai-supply-chain-security/ai-supply-chain-security/model-security-to-secure-your-ai-models",
   },
-  {
-    id: "skillSecurity", label: "Skill Security", meta: "scan agent artifacts", cluster: "lifecycle", glyph: "SK",
-    pos: [160, 420, -125], size: 49, asset: `${A}redteam-context.svg`, status: "PREVIEW",
-    eyebrow: "Agent artifact scanning",
-    summary: "Evaluates agent source, skills, and tools for critical attack paths and unsafe capabilities.",
-    role: "Apply pre-deployment trust decisions to the packages that give agents new capabilities.",
-    facts: ["Rule-based skill assessment", "Trust and remove-trust workflows", "Preview capability in current documentation"],
-    source: "https://docs.paloaltonetworks.com/prisma-airs/getting-started/prisma-airs-platform-architecture",
-  },
-  {
-    id: "agentIdentity", label: "AI Agent Identity", meta: "govern agents", cluster: "agent", glyph: "AID",
-    pos: [410, 220, 50], size: 64, asset: `${A}gateway-identity.svg`, important: true,
-    eyebrow: "Agent governance",
-    summary: "AIRS establishes visibility and policy around agents and MCP-based workflows.",
-    role: "Extend platform policy from model traffic to agent identities, tool use, and communication paths.",
-    facts: ["Enterprise and SaaS agent visibility", "MCP-centered security workflows", "Runtime protection for agent activity"],
-    source: "https://docs.paloaltonetworks.com/prisma-airs/ai-agent-identity",
-  },
-  {
-    id: "mcpSecurity", label: "MCP Security", meta: "protect tool calls", cluster: "agent", glyph: "MCP",
-    pos: [515, 360, 5], size: 54, asset: `${A}gateway-api.svg`,
-    eyebrow: "Tool-call security",
-    summary: "The AIRS MCP Server exposes runtime-security scanning as tools that agents invoke before processing content.",
-    role: "Apply AIRS security profiles to prompt, response, and tool-invocation stages in an agent workflow.",
-    facts: ["Uses AIRS Runtime API services", "Two-stage prompt and response validation", "Allow or block actions with logs"],
-    source: "https://docs.paloaltonetworks.com/prisma-airs/ai-agent-identity/understanding-the-prisma-airs-mcp-server",
-  },
 ];
 
 const edges = [
   { id: "airs-gateway", from: "airs", to: "gateway", type: "capability", label: "gateway pillar" },
   { id: "airs-runtime", from: "airs", to: "runtime", type: "capability", label: "runtime pillar" },
-  { id: "airs-inventory", from: "airs", to: "inventory", type: "capability", label: "inventory context" },
+  { id: "airs-endpoint", from: "airs", to: "endpointSecurity", type: "capability", label: "AIRS + AES" },
   { id: "airs-redteam", from: "airs", to: "redTeam", type: "capability", label: "assessment pillar" },
-  { id: "airs-supply", from: "airs", to: "supplyChain", type: "capability", label: "supply-chain pillar" },
-  { id: "airs-agent", from: "airs", to: "agentIdentity", type: "capability", label: "agent security" },
-  { id: "workspaces-gateway", from: "workspaces", to: "gateway", type: "policy", label: "scoped key" },
-  { id: "gateway-guardrails", from: "gateway", to: "guardrails", type: "data", label: "request + response" },
-  { id: "gateway-observability", from: "gateway", to: "gatewayObservability", type: "telemetry", label: "transactions" },
-  { id: "guardrails-observability", from: "guardrails", to: "gatewayObservability", type: "telemetry", label: "policy hits" },
-  { id: "gateway-runtime", from: "gateway", to: "runtime", type: "data", label: "governed traffic" },
-  { id: "guardrails-scan", from: "guardrails", to: "scanEngine", type: "data", label: "deep inspection" },
-  { id: "profiles-scan", from: "securityProfiles", to: "scanEngine", type: "policy", label: "selected profile" },
-  { id: "profiles-runtime", from: "securityProfiles", to: "runtime", type: "policy", label: "protection policy" },
-  { id: "runtime-api", from: "runtime", to: "apiIntercept", type: "capability", label: "code path" },
-  { id: "runtime-network", from: "runtime", to: "networkIntercept", type: "capability", label: "network path" },
-  { id: "api-scan", from: "apiIntercept", to: "scanEngine", type: "data", label: "prompt + response" },
-  { id: "network-scan", from: "networkIntercept", to: "scanEngine", type: "data", label: "inline traffic" },
-  { id: "scan-logs", from: "scanEngine", to: "scanLogs", type: "telemetry", label: "verdict evidence" },
-  { id: "inventory-redteam", from: "inventory", to: "redTeam", type: "lifecycle", label: "creates target" },
-  { id: "redteam-runtime", from: "redTeam", to: "runtime", type: "lifecycle", label: "hardens controls" },
-  { id: "inventory-runtime", from: "inventory", to: "runtime", type: "lifecycle", label: "recommends protection" },
-  { id: "supply-model", from: "supplyChain", to: "modelSecurity", type: "capability", label: "model scans" },
-  { id: "supply-skill", from: "supplyChain", to: "skillSecurity", type: "capability", label: "skill scans" },
-  { id: "agent-mcp", from: "agentIdentity", to: "mcpSecurity", type: "data", label: "MCP workflow" },
-  { id: "mcp-profiles", from: "mcpSecurity", to: "securityProfiles", type: "policy", label: "uses profile" },
-  { id: "mcp-scan", from: "mcpSecurity", to: "scanEngine", type: "data", label: "invokes scan" },
-  { id: "api-agent", from: "apiIntercept", to: "agentIdentity", type: "data", label: "protects agent" },
+  { id: "airs-model", from: "airs", to: "modelSecurity", type: "capability", label: "model assurance" },
+  { id: "gateway-runtime", from: "gateway", to: "runtime", type: "data", label: "policy-enforced traffic" },
+  { id: "endpoint-runtime", from: "endpointSecurity", to: "runtime", type: "data", label: "agent traffic" },
+  { id: "redteam-runtime", from: "redTeam", to: "runtime", type: "lifecycle", label: "findings harden policy" },
+  { id: "model-runtime", from: "modelSecurity", to: "runtime", type: "policy", label: "approved model" },
 ];
 
 const views = {
   platform: {
     code: "VIEW 01",
-    title: "Prisma AIRS platform",
+    title: "Focused Prisma AIRS platform",
     focus: "airs",
-    description: "Hover or select a capability to illuminate its direct integration paths.",
-    nodes: ["airs", "gateway", "runtime", "inventory", "redTeam", "supplyChain", "agentIdentity"],
-    edges: ["airs-gateway", "airs-runtime", "airs-inventory", "airs-redteam", "airs-supply", "airs-agent", "gateway-runtime"],
+    description: "Six core surfaces, one shared security platform. Hover or select any node to trace its direct paths.",
+    nodes: ["airs", "gateway", "runtime", "endpointSecurity", "redTeam", "modelSecurity"],
+    edges: ["airs-gateway", "airs-runtime", "airs-endpoint", "airs-redteam", "airs-model"],
   },
   runtime: {
     code: "VIEW 02",
-    title: "Runtime traffic inspection",
-    focus: "gateway",
-    description: "Follow scoped traffic through gateway policy, interception, scan verdicts, and evidence.",
-    nodes: ["workspaces", "gateway", "guardrails", "gatewayObservability", "securityProfiles", "runtime", "apiIntercept", "networkIntercept", "scanEngine", "scanLogs"],
-    edges: ["workspaces-gateway", "gateway-guardrails", "gateway-observability", "guardrails-observability", "gateway-runtime", "guardrails-scan", "profiles-scan", "profiles-runtime", "runtime-api", "runtime-network", "api-scan", "network-scan", "scan-logs"],
-  },
-  agent: {
-    code: "VIEW 03",
-    title: "Agent and MCP security",
-    focus: "agentIdentity",
-    description: "Trace agent identity, tool calls, security profiles, Runtime inspection, and verdict evidence.",
-    nodes: ["agentIdentity", "mcpSecurity", "securityProfiles", "scanEngine", "scanLogs", "apiIntercept", "runtime"],
-    edges: ["agent-mcp", "mcp-profiles", "mcp-scan", "scan-logs", "api-agent", "runtime-api", "profiles-runtime"],
+    title: "Live AI traffic protection",
+    focus: "runtime",
+    description: "Trace governed AI and coding-agent traffic into the Runtime Security enforcement layer.",
+    nodes: ["airs", "gateway", "runtime", "endpointSecurity"],
+    edges: ["airs-runtime", "gateway-runtime", "endpoint-runtime"],
   },
   lifecycle: {
-    code: "VIEW 04",
+    code: "VIEW 03",
     title: "AI lifecycle assurance",
-    focus: "inventory",
-    description: "Move from discovery and adversarial testing to artifact assurance and runtime protection.",
-    nodes: ["inventory", "redTeam", "supplyChain", "modelSecurity", "skillSecurity", "runtime", "securityProfiles"],
-    edges: ["inventory-redteam", "inventory-runtime", "redteam-runtime", "supply-model", "supply-skill", "profiles-runtime"],
+    focus: "redTeam",
+    description: "Connect adversarial testing and model assurance to the controls that protect production AI.",
+    nodes: ["airs", "redTeam", "modelSecurity", "runtime"],
+    edges: ["airs-redteam", "airs-model", "redteam-runtime", "model-runtime"],
   },
 };
 
@@ -342,6 +207,7 @@ function createNodes() {
     button.dataset.node = node.id;
     button.style.setProperty("--node-color", COLORS[node.cluster]);
     button.style.setProperty("--node-size", `${node.size}px`);
+    button.style.setProperty("--node-render-size", `${node.size}px`);
     button.setAttribute("aria-label", `${node.label}. ${node.summary}`);
 
     const prism = document.createElement("span");
@@ -454,7 +320,9 @@ function applyVisualState() {
   const focusEdges = new Set(focusConnections.map(({ edge }) => edge.id));
   const relatedNodes = new Set(focusConnections.map(({ node }) => node.id));
   const lensFocusId = !focusId ? view.focus : null;
-  const lensConnections = lensFocusId ? connectionsFor(lensFocusId) : [];
+  const lensConnections = lensFocusId
+    ? connectionsFor(lensFocusId).filter(({ edge }) => viewEdges.has(edge.id))
+    : [];
   const lensEdges = new Set(lensConnections.map(({ edge }) => edge.id));
 
   nodeElements.forEach((element, id) => {
@@ -564,6 +432,23 @@ function resize() {
   linkLayer.setAttribute("viewBox", `0 0 ${viewport.width} ${viewport.height}`);
   linkLayer.setAttribute("width", viewport.width);
   linkLayer.setAttribute("height", viewport.height);
+
+  const iconScale = viewport.width <= 360
+    ? .62
+    : viewport.width <= 520
+      ? .68
+      : viewport.width <= 820 || viewport.height <= 640
+        ? .76
+        : viewport.width <= 1180 || viewport.height <= 760
+          ? .84
+          : viewport.width <= 1440 || viewport.height <= 850
+            ? .9
+            : 1;
+
+  nodes.forEach((node) => {
+    const element = nodeElements.get(node.id);
+    element?.style.setProperty("--node-render-size", `${Math.round(node.size * iconScale)}px`);
+  });
 }
 
 let seed = 734921;
@@ -629,17 +514,16 @@ function rotatePoint(position, time) {
 
 function projectNode(node, time) {
   const rotated = rotatePoint(node.pos, time);
-  const fit = clamp(Math.min(viewport.width / 1220, viewport.height / 790) * 1.04, .42, 1.16) * state.zoom;
+  const fit = clamp(Math.min(viewport.width / 1220, viewport.height / 790) * 1.04, .34, 1.16) * state.zoom;
   const centerShift = state.selected && viewport.width > 920 ? -115 : 0;
   const centerX = viewport.width * .5 + centerShift;
   const centerY = viewport.height * .505 + (viewport.width < 760 ? 22 : 0);
   const depthScale = clamp(920 / (920 - rotated.z * fit), .72, 1.32);
-  const mobileScale = viewport.width < 700 ? .84 : 1;
   return {
     x: centerX + rotated.x * fit,
     y: centerY + rotated.y * fit,
     z: rotated.z,
-    scale: depthScale * mobileScale,
+    scale: depthScale,
   };
 }
 

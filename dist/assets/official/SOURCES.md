@@ -9,6 +9,7 @@ feature artwork is mapped by function instead of inventing new marks.
 - `prisma-primary.png`, `prisma-reversed.png` — Prisma brand marks from the [Palo Alto Networks brand page](https://www.paloaltonetworks.com/company/brand)
 - `gateway-*.svg` — official feature artwork from the [AI Gateway product page](https://www.paloaltonetworks.com/ai-security/ai-gateway)
 - `runtime-*.svg` — official feature artwork from the [AI Runtime Security product page](https://www.paloaltonetworks.com/ai-security/ai-runtime-security)
+- `runtime-platform.svg` is reused for the Endpoint Security node representing the documented [Cortex Agentic Endpoint Security and Prisma AIRS Runtime Security integration](https://www.paloaltonetworks.com/blog/ai-security/securing-the-ai-coding-frontier-prisma-airs-agentic-endpoint-security/)
 - `redteam-*.svg` — official feature artwork from the [AI Red Teaming product page](https://www.paloaltonetworks.com/ai-security/ai-red-teaming)
 - `model-*.svg` — official feature artwork from the [AI Model Security product page](https://www.paloaltonetworks.com/ai-security/ai-model-security)
 
