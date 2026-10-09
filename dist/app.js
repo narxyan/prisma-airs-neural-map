@@ -1,4 +1,7 @@
 const NS = "http://www.w3.org/2000/svg";
+const THEME_STORAGE_KEY = "prisma-airs-theme";
+const root = document.documentElement;
+const systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
 
 const COLORS = {
   core: "#ffffff",
@@ -125,6 +128,9 @@ const edgeLayer = document.querySelector("#edgeLayer");
 const signalLayer = document.querySelector("#signalLayer");
 const nodeLayer = document.querySelector("#nodeLayer");
 const inspector = document.querySelector("#inspector");
+const themeToggle = document.querySelector("#themeToggle");
+const brandLogo = document.querySelector("#brandLogo");
+const themeColor = document.querySelector('meta[name="theme-color"]');
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const state = {
@@ -157,6 +163,50 @@ function makeSvg(tag, attrs = {}) {
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
+}
+
+function savedTheme() {
+  try {
+    const value = localStorage.getItem(THEME_STORAGE_KEY);
+    return value === "light" || value === "dark" ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+function colorForCluster(cluster) {
+  if (cluster === "core" && root.dataset.theme === "light") return "#245bff";
+  return COLORS[cluster];
+}
+
+function applyTheme(theme, persist = false) {
+  const nextTheme = theme === "light" ? "light" : "dark";
+  const nextAction = nextTheme === "dark" ? "light" : "dark";
+  root.dataset.theme = nextTheme;
+  root.style.colorScheme = nextTheme;
+  themeColor?.setAttribute("content", nextTheme === "light" ? "#edf3fc" : "#02040b");
+
+  if (brandLogo) {
+    brandLogo.src = nextTheme === "light" ? brandLogo.dataset.lightSrc : brandLogo.dataset.darkSrc;
+  }
+
+  if (themeToggle) {
+    themeToggle.dataset.theme = nextTheme;
+    themeToggle.setAttribute("aria-pressed", String(nextTheme === "light"));
+    themeToggle.setAttribute("aria-label", `Switch to ${nextAction} mode`);
+    themeToggle.title = `Switch to ${nextAction} mode`;
+    const label = themeToggle.querySelector(".theme-toggle-label");
+    if (label) label.textContent = nextAction === "light" ? "Light" : "Dark";
+  }
+
+  nodeElements.forEach((element, id) => {
+    element.style.setProperty("--node-color", colorForCluster(byId.get(id).cluster));
+  });
+  if (state.selected) updateInspector(byId.get(state.selected));
+
+  if (persist) {
+    try { localStorage.setItem(THEME_STORAGE_KEY, nextTheme); } catch {}
+  }
 }
 
 function connectionsFor(nodeId) {
@@ -205,7 +255,7 @@ function createNodes() {
     button.type = "button";
     button.className = `space-node${node.id === "airs" ? " is-platform" : ""}`;
     button.dataset.node = node.id;
-    button.style.setProperty("--node-color", COLORS[node.cluster]);
+    button.style.setProperty("--node-color", colorForCluster(node.cluster));
     button.style.setProperty("--node-size", `${node.size}px`);
     button.style.setProperty("--node-render-size", `${node.size}px`);
     button.setAttribute("aria-label", `${node.label}. ${node.summary}`);
@@ -350,7 +400,7 @@ function applyVisualState() {
 }
 
 function updateInspector(node) {
-  inspector.style.setProperty("--detail-color", COLORS[node.cluster]);
+  inspector.style.setProperty("--detail-color", colorForCluster(node.cluster));
   const icon = document.querySelector("#detailIcon");
   icon.src = node.asset;
   icon.alt = `${node.label} official feature icon`;
@@ -373,7 +423,7 @@ function updateInspector(node) {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "connection-button";
-    button.style.setProperty("--connection-color", COLORS[connected.cluster]);
+    button.style.setProperty("--connection-color", colorForCluster(connected.cluster));
     const light = document.createElement("i");
     light.setAttribute("aria-hidden", "true");
     const name = document.createElement("strong");
@@ -469,9 +519,10 @@ const stars = Array.from({ length: 360 }, (_, index) => ({
 
 function drawStars(time) {
   const { width, height, dpr } = viewport;
+  const isLight = root.dataset.theme === "light";
   context.setTransform(dpr, 0, 0, dpr, 0, 0);
   context.clearRect(0, 0, width, height);
-  context.fillStyle = "#02040b";
+  context.fillStyle = isLight ? "#edf3fc" : "#02040b";
   context.fillRect(0, 0, width, height);
 
   stars.forEach((star) => {
@@ -483,14 +534,20 @@ function drawStars(time) {
     if (y < 0) y += height;
     if (y > height) y -= height;
     const twinkle = prefersReducedMotion ? 1 : .72 + Math.sin(time * .0011 + star.phase) * .28;
-    const alpha = star.alpha * twinkle;
+    const alpha = star.alpha * twinkle * (isLight ? .58 : 1);
     context.beginPath();
     context.arc(x, y, star.size * star.depth, 0, Math.PI * 2);
-    context.fillStyle = star.tint === "cyan"
-      ? `rgba(93,224,255,${alpha})`
-      : star.tint === "violet"
-        ? `rgba(178,145,255,${alpha})`
-        : `rgba(231,239,255,${alpha})`;
+    context.fillStyle = isLight
+      ? star.tint === "cyan"
+        ? `rgba(0,125,166,${alpha})`
+        : star.tint === "violet"
+          ? `rgba(94,61,163,${alpha})`
+          : `rgba(43,61,96,${alpha})`
+      : star.tint === "cyan"
+        ? `rgba(93,224,255,${alpha})`
+        : star.tint === "violet"
+          ? `rgba(178,145,255,${alpha})`
+          : `rgba(231,239,255,${alpha})`;
     context.fill();
   });
 }
@@ -649,6 +706,14 @@ document.querySelectorAll(".view-tab").forEach((button) => {
   button.addEventListener("click", () => setView(button.dataset.view));
 });
 
+themeToggle?.addEventListener("click", () => {
+  applyTheme(root.dataset.theme === "light" ? "dark" : "light", true);
+});
+
+systemTheme.addEventListener("change", (event) => {
+  if (!savedTheme()) applyTheme(event.matches ? "dark" : "light");
+});
+
 document.querySelector("#resetCamera").addEventListener("click", resetCamera);
 document.querySelector("#closeInspector").addEventListener("click", clearSelection);
 
@@ -658,6 +723,7 @@ document.addEventListener("keydown", (event) => {
 
 window.addEventListener("resize", resize);
 
+applyTheme(root.dataset.theme || (systemTheme.matches ? "dark" : "light"));
 createEdges();
 createNodes();
 resize();

@@ -9,6 +9,18 @@
     />
     <meta name="theme-color" content="#02040b" />
     <title>Prisma AIRS · 3D Integration Galaxy</title>
+    <script>
+      (() => {
+        const key = "prisma-airs-theme";
+        let saved = null;
+        try { saved = localStorage.getItem(key); } catch {}
+        const theme = saved === "light" || saved === "dark"
+          ? saved
+          : (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
+      })();
+    </script>
     <link
       rel="icon"
       type="image/svg+xml"
@@ -28,7 +40,13 @@
 
     <header class="hud-header">
       <div class="brand-panel">
-        <img src="./assets/official/prisma-reversed.png" alt="Prisma by Palo Alto Networks" />
+        <img
+          id="brandLogo"
+          src="./assets/official/prisma-reversed.png"
+          data-dark-src="./assets/official/prisma-reversed.png"
+          data-light-src="./assets/official/prisma-primary.png"
+          alt="Prisma by Palo Alto Networks"
+        />
         <div>
           <span>PRISMA AIRS</span>
           <strong>3D integration galaxy</strong>
@@ -43,6 +61,16 @@
 
       <div class="camera-controls">
         <span id="cameraReadout">ORBIT 12° · ZOOM 1.0</span>
+        <button id="themeToggle" class="theme-toggle" type="button" aria-label="Switch to light mode" aria-pressed="false">
+          <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="3.5"></circle>
+            <path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"></path>
+          </svg>
+          <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.2 15.4A8.4 8.4 0 0 1 8.6 3.8 8.7 8.7 0 1 0 20.2 15.4Z"></path>
+          </svg>
+          <span class="theme-toggle-label">Light</span>
+        </button>
         <button id="resetCamera" type="button">Reset view</button>
       </div>
     </header>
