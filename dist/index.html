@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="An interactive security-fabric view of Prisma AIRS traffic, policy, enforcement, and telemetry flows."
+      content="Explore Prisma AIRS capabilities, integration paths, policy flows, and runtime traffic in an interactive 3D security galaxy."
     />
-    <meta name="theme-color" content="#071014" />
-    <title>Prisma AIRS Security Fabric</title>
+    <meta name="theme-color" content="#02040b" />
+    <title>Prisma AIRS · 3D Integration Galaxy</title>
     <link
       rel="icon"
       type="image/svg+xml"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23071014'/%3E%3Cpath d='M10 20h20v8h24M10 44h18v-8h26' fill='none' stroke='%231fe6c2' stroke-width='5'/%3E%3Crect x='26' y='24' width='14' height='16' rx='2' fill='%234b8dff' stroke='%23dffff8' stroke-width='2'/%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2302040b'/%3E%3Cpath d='M34 10 18 40h16v14L6 32l15-15 4-4v27h12L34 10Z' fill='%23fff'/%3E%3Ccircle cx='50' cy='18' r='3' fill='%2303c0e8'/%3E%3C/svg%3E"
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -23,148 +23,116 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <div class="scanline-field" aria-hidden="true"></div>
+    <canvas id="starfield" aria-hidden="true"></canvas>
+    <div class="galaxy-wash" aria-hidden="true"></div>
 
-    <div class="app-shell">
-      <header class="topbar">
-        <div class="brand-lockup">
-          <span class="fabric-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+    <header class="hud-header">
+      <div class="brand-panel">
+        <img src="./assets/official/prisma-reversed.png" alt="Prisma by Palo Alto Networks" />
+        <div>
+          <span>PRISMA AIRS</span>
+          <strong>3D integration galaxy</strong>
+        </div>
+      </div>
+
+      <nav class="view-tabs" aria-label="Integration views" role="tablist">
+        <button class="view-tab is-active" role="tab" aria-selected="true" data-view="platform">Platform</button>
+        <button class="view-tab" role="tab" aria-selected="false" data-view="runtime">Runtime traffic</button>
+        <button class="view-tab" role="tab" aria-selected="false" data-view="agent">Agent + MCP</button>
+        <button class="view-tab" role="tab" aria-selected="false" data-view="lifecycle">AI lifecycle</button>
+      </nav>
+
+      <div class="camera-controls">
+        <span id="cameraReadout">ORBIT 12° · ZOOM 1.0</span>
+        <button id="resetCamera" type="button">Reset view</button>
+      </div>
+    </header>
+
+    <main id="spaceStage" class="space-stage" aria-label="Interactive 3D map of Prisma AIRS capabilities">
+      <svg id="linkLayer" class="link-layer" aria-label="Prisma AIRS traffic and integration paths">
+        <defs>
+          <filter id="linkGlow" x="-80%" y="-80%" width="260%" height="260%">
+            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+          <marker id="arrow-data" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0 0 8 4 0 8Z" fill="#03c0e8" />
+          </marker>
+          <marker id="arrow-policy" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0 0 8 4 0 8Z" fill="#9e75ff" />
+          </marker>
+          <marker id="arrow-lifecycle" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0 0 8 4 0 8Z" fill="#ff9e57" />
+          </marker>
+          <marker id="arrow-telemetry" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0 0 8 4 0 8Z" fill="#73e6ff" />
+          </marker>
+          <marker id="arrow-capability" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0 0 8 4 0 8Z" fill="#b9c7dd" />
+          </marker>
+        </defs>
+        <g id="edgeLayer" aria-hidden="true"></g>
+        <g id="signalLayer" aria-hidden="true"></g>
+      </svg>
+
+      <div id="nodeLayer" class="node-layer"></div>
+
+      <section class="level-legend" aria-label="Capability groups">
+        <div class="legend-title"><strong>CAPABILITY FAMILIES</strong><span>COLOR</span></div>
+        <ul>
+          <li><i class="gateway"></i><span>Gateway</span><b>GOVERN</b></li>
+          <li><i class="runtime"></i><span>Runtime</span><b>PROTECT</b></li>
+          <li><i class="agent"></i><span>Agent</span><b>VERIFY</b></li>
+          <li><i class="lifecycle"></i><span>Lifecycle</span><b>ASSESS</b></li>
+          <li><i class="telemetry"></i><span>Evidence</span><b>OBSERVE</b></li>
+        </ul>
+      </section>
+
+      <div class="scene-status" aria-live="polite">
+        <span id="viewCode">VIEW 01</span>
+        <div>
+          <strong id="viewTitle">Prisma AIRS platform</strong>
+          <p id="viewDescription">Hover or select a capability to illuminate its direct integration paths.</p>
+        </div>
+      </div>
+
+      <div class="interaction-guide">
+        <span>Drag to orbit</span><i></i><span>Scroll to zoom</span><i></i><span>Hover to trace</span><i></i><span>Click to inspect</span>
+      </div>
+
+      <aside id="inspector" class="inspector" aria-hidden="true" aria-live="polite">
+        <button id="closeInspector" class="close-inspector" type="button" aria-label="Close capability details">×</button>
+        <div class="inspector-mark">
+          <div class="inspector-icon"><img id="detailIcon" src="./assets/official/prisma-airs.svg" alt="" /></div>
           <div>
-            <p class="kicker">PRISMA AIRS / INTERNAL TOPOLOGY</p>
-            <h1>Security fabric</h1>
+            <span id="detailCluster">PLATFORM CORE</span>
+            <small>OFFICIAL PALO ALTO NETWORKS ASSET</small>
           </div>
         </div>
+        <p id="detailEyebrow" class="detail-eyebrow"></p>
+        <h2 id="detailTitle"></h2>
+        <p id="detailSummary" class="detail-summary"></p>
 
-        <div class="system-readout" aria-label="Topology summary">
-          <span><b id="capabilityCount">16</b> capabilities</span>
-          <span><b id="linkCount">21</b> documented links</span>
-          <span class="system-state"><i></i> Prisma-only</span>
+        <div class="detail-block">
+          <h3>Function in the flow</h3>
+          <p id="detailRole"></p>
         </div>
-      </header>
 
-      <main>
-        <section class="trace-controls" aria-label="Traffic trace views">
-          <div class="trace-heading">
-            <span>TRACE MODE</span>
-            <strong id="traceCode">FLOW / 01</strong>
-          </div>
-          <div class="trace-tabs" role="tablist" aria-label="Traffic trace views">
-            <button class="trace-tab is-active" role="tab" aria-selected="true" data-lens="request">
-              <span>01</span> Request inspection
-            </button>
-            <button class="trace-tab" role="tab" aria-selected="false" data-lens="agent">
-              <span>02</span> Agent + MCP
-            </button>
-            <button class="trace-tab" role="tab" aria-selected="false" data-lens="lifecycle">
-              <span>03</span> Pre-deployment
-            </button>
-            <button class="trace-tab" role="tab" aria-selected="false" data-lens="fabric">
-              <span>04</span> Full fabric
-            </button>
-          </div>
-          <button class="clear-focus" id="clearFocus" type="button">Clear module focus</button>
-        </section>
+        <div class="detail-block">
+          <h3>Control surface</h3>
+          <ul id="detailFacts"></ul>
+        </div>
 
-        <section class="inspector-ribbon" aria-live="polite">
-          <div class="module-identity">
-            <div class="module-glyph" id="detailGlyph" aria-hidden="true">GW</div>
-            <div>
-              <p><span id="detailCluster">GATEWAY</span> <i></i> <span id="detailStatus">DOCUMENTED</span></p>
-              <h2 id="detailTitle">AI Gateway</h2>
-              <span id="detailEyebrow">Central AI traffic control</span>
-            </div>
-          </div>
+        <div class="detail-block">
+          <div class="detail-heading-row"><h3>Direct integrations</h3><span id="connectionCount">00</span></div>
+          <div id="connectionList" class="connection-list"></div>
+        </div>
 
-          <div class="inspector-copy">
-            <span class="section-label">FUNCTION IN FABRIC</span>
-            <p id="detailRole"></p>
-          </div>
-
-          <div class="inspector-facts">
-            <span class="section-label">CONTROL SURFACE</span>
-            <ul id="detailFacts"></ul>
-          </div>
-
-          <div class="inspector-links">
-            <div class="inspector-link-head">
-              <span class="section-label">CONNECTED PORTS</span>
-              <b id="connectionCount">00</b>
-            </div>
-            <div id="connectionList" class="connection-list"></div>
-            <a id="sourceLink" class="source-link" href="#" target="_blank" rel="noreferrer">
-              Official documentation <span aria-hidden="true">↗</span>
-            </a>
-          </div>
-        </section>
-
-        <section class="fabric-frame" aria-label="Prisma AIRS security fabric topology">
-          <div class="fabric-toolbar">
-            <div>
-              <span class="eyebrow">TOPOLOGY / CONTROL + DATA PLANE</span>
-              <strong id="traceTitle">Inspect a live AI request</strong>
-            </div>
-            <p id="traceDescription">Trace policy from a scoped key through gateway controls, deeper inspection, verdict, and evidence.</p>
-          </div>
-
-          <div class="fabric-scroller">
-            <div class="fabric-canvas" id="fabricCanvas">
-              <div class="plane plane-control"><span>01 / GOVERNANCE PLANE</span></div>
-              <div class="plane plane-runtime"><span>02 / RUNTIME DATA PLANE</span></div>
-              <div class="plane plane-agent"><span>03 / AGENT TRUST PLANE</span></div>
-              <div class="plane plane-lifecycle"><span>04 / ASSURANCE PLANE</span></div>
-
-              <div class="backplane" aria-hidden="true">
-                <span>AIRS SHARED SECURITY BACKPLANE</span>
-                <i></i><i></i><i></i><i></i><i></i><i></i>
-              </div>
-
-              <svg
-                id="topology"
-                class="topology"
-                viewBox="0 0 1280 680"
-                role="img"
-                aria-label="Orthogonal traffic paths between Prisma AIRS capabilities"
-              >
-                <defs>
-                  <pattern id="microGrid" width="24" height="24" patternUnits="userSpaceOnUse">
-                    <path d="M 24 0 L 0 0 0 24" fill="none" stroke="rgba(255,255,255,.035)" stroke-width="1" />
-                  </pattern>
-                  <filter id="routeGlow" x="-40%" y="-40%" width="180%" height="180%">
-                    <feGaussianBlur stdDeviation="3.5" result="blur" />
-                    <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-                  </filter>
-                </defs>
-                <rect width="1280" height="680" fill="url(#microGrid)" />
-                <g id="edgeLayer" aria-hidden="true"></g>
-                <g id="signalLayer" aria-hidden="true"></g>
-              </svg>
-
-              <div id="moduleLayer" class="module-layer"></div>
-
-              <div class="trace-sequence" aria-live="polite">
-                <span class="sequence-label">ACTIVE SIGNAL</span>
-                <div id="sequenceSteps" class="sequence-steps"></div>
-                <span class="verdict-chip" id="verdictChip">POLICY → INSPECT → RECORD</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="fabric-legend" aria-label="Connection legend">
-            <span><i class="legend-route data"></i>Traffic</span>
-            <span><i class="legend-route policy"></i>Policy</span>
-            <span><i class="legend-route lifecycle"></i>Lifecycle</span>
-            <span><i class="legend-route telemetry"></i>Evidence</span>
-            <span><i class="legend-route capability"></i>Capability</span>
-            <em>Select any module to isolate its connections.</em>
-          </div>
-        </section>
-      </main>
-
-      <footer class="footer-bar">
-        <p>Interactive architecture concept · Prisma AIRS capabilities only</p>
-        <p>Official Palo Alto Networks documentation · verified 08 Oct 2026</p>
-      </footer>
-    </div>
+        <a id="sourceLink" class="source-link" href="#" target="_blank" rel="noreferrer">
+          Open official documentation <span aria-hidden="true">↗</span>
+        </a>
+      </aside>
+    </main>
 
     <script src="./app.js" defer></script>
   </body>
