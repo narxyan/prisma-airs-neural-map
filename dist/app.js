@@ -219,6 +219,7 @@ const views = {
   platform: {
     code: "VIEW 01",
     title: "Prisma AIRS platform",
+    focus: "airs",
     description: "Hover or select a capability to illuminate its direct integration paths.",
     nodes: ["airs", "gateway", "runtime", "inventory", "redTeam", "supplyChain", "agentIdentity"],
     edges: ["airs-gateway", "airs-runtime", "airs-inventory", "airs-redteam", "airs-supply", "airs-agent", "gateway-runtime"],
@@ -226,6 +227,7 @@ const views = {
   runtime: {
     code: "VIEW 02",
     title: "Runtime traffic inspection",
+    focus: "gateway",
     description: "Follow scoped traffic through gateway policy, interception, scan verdicts, and evidence.",
     nodes: ["workspaces", "gateway", "guardrails", "gatewayObservability", "securityProfiles", "runtime", "apiIntercept", "networkIntercept", "scanEngine", "scanLogs"],
     edges: ["workspaces-gateway", "gateway-guardrails", "gateway-observability", "guardrails-observability", "gateway-runtime", "guardrails-scan", "profiles-scan", "profiles-runtime", "runtime-api", "runtime-network", "api-scan", "network-scan", "scan-logs"],
@@ -233,6 +235,7 @@ const views = {
   agent: {
     code: "VIEW 03",
     title: "Agent and MCP security",
+    focus: "agentIdentity",
     description: "Trace agent identity, tool calls, security profiles, Runtime inspection, and verdict evidence.",
     nodes: ["agentIdentity", "mcpSecurity", "securityProfiles", "scanEngine", "scanLogs", "apiIntercept", "runtime"],
     edges: ["agent-mcp", "mcp-profiles", "mcp-scan", "scan-logs", "api-agent", "runtime-api", "profiles-runtime"],
@@ -240,6 +243,7 @@ const views = {
   lifecycle: {
     code: "VIEW 04",
     title: "AI lifecycle assurance",
+    focus: "inventory",
     description: "Move from discovery and adversarial testing to artifact assurance and runtime protection.",
     nodes: ["inventory", "redTeam", "supplyChain", "modelSecurity", "skillSecurity", "runtime", "securityProfiles"],
     edges: ["inventory-redteam", "inventory-runtime", "redteam-runtime", "supply-model", "supply-skill", "profiles-runtime"],
@@ -449,17 +453,22 @@ function applyVisualState() {
   const focusConnections = focusId ? connectionsFor(focusId) : [];
   const focusEdges = new Set(focusConnections.map(({ edge }) => edge.id));
   const relatedNodes = new Set(focusConnections.map(({ node }) => node.id));
+  const lensFocusId = !focusId ? view.focus : null;
+  const lensConnections = lensFocusId ? connectionsFor(lensFocusId) : [];
+  const lensEdges = new Set(lensConnections.map(({ edge }) => edge.id));
 
   nodeElements.forEach((element, id) => {
-    element.classList.toggle("is-focused", id === focusId);
-    element.classList.toggle("is-related", Boolean(focusId) && relatedNodes.has(id));
+    const isLensFocus = id === lensFocusId;
+    const isLensRelated = Boolean(lensFocusId) && viewNodes.has(id) && id !== lensFocusId;
+    element.classList.toggle("is-focused", id === focusId || isLensFocus);
+    element.classList.toggle("is-related", (Boolean(focusId) && relatedNodes.has(id)) || isLensRelated);
     element.classList.toggle("is-muted", Boolean(focusId) && id !== focusId && !relatedNodes.has(id));
     element.classList.toggle("is-view-active", !focusId && viewNodes.has(id));
     element.classList.toggle("is-view-muted", !focusId && !viewNodes.has(id));
   });
 
   edgeElements.forEach(({ path, labelGroup }, id) => {
-    const isFocus = Boolean(focusId) && focusEdges.has(id);
+    const isFocus = focusId ? focusEdges.has(id) : lensEdges.has(id);
     const isLens = !focusId && viewEdges.has(id);
     path.classList.toggle("is-focus", isFocus);
     path.classList.toggle("is-lens", isLens);
