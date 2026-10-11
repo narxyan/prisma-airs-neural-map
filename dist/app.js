@@ -524,6 +524,7 @@ function drawStars(time) {
   context.clearRect(0, 0, width, height);
   context.fillStyle = isLight ? "#edf3fc" : "#02040b";
   context.fillRect(0, 0, width, height);
+  if (isLight) return;
 
   stars.forEach((star) => {
     const drift = prefersReducedMotion ? 0 : time * .000003 * star.depth;
@@ -534,20 +535,14 @@ function drawStars(time) {
     if (y < 0) y += height;
     if (y > height) y -= height;
     const twinkle = prefersReducedMotion ? 1 : .72 + Math.sin(time * .0011 + star.phase) * .28;
-    const alpha = star.alpha * twinkle * (isLight ? .58 : 1);
+    const alpha = star.alpha * twinkle;
     context.beginPath();
     context.arc(x, y, star.size * star.depth, 0, Math.PI * 2);
-    context.fillStyle = isLight
-      ? star.tint === "cyan"
-        ? `rgba(0,125,166,${alpha})`
-        : star.tint === "violet"
-          ? `rgba(94,61,163,${alpha})`
-          : `rgba(43,61,96,${alpha})`
-      : star.tint === "cyan"
-        ? `rgba(93,224,255,${alpha})`
-        : star.tint === "violet"
-          ? `rgba(178,145,255,${alpha})`
-          : `rgba(231,239,255,${alpha})`;
+    context.fillStyle = star.tint === "cyan"
+      ? `rgba(93,224,255,${alpha})`
+      : star.tint === "violet"
+        ? `rgba(178,145,255,${alpha})`
+        : `rgba(231,239,255,${alpha})`;
     context.fill();
   });
 }
