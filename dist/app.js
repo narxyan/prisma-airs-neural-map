@@ -461,12 +461,17 @@ function connectionsFor(nodeId) {
 function updateEdgePalettes() {
   edgeElements.forEach(({ stops }, edgeId) => {
     const edge = edgeById.get(edgeId);
-    const start = colorForCluster(byId.get(edge.from).cluster);
-    const middle = edge.via
-      ? colorForCluster(byId.get(edge.via).cluster)
-      : FLOW_COLORS[edge.type];
-    const end = colorForCluster(byId.get(edge.to).cluster);
-    [start, middle, middle, end].forEach((color, index) => {
+    const palette = root.dataset.theme === "dark"
+      ? (edge.via
+          ? ["#2b2d32", "#676a70", "#676a70", "#34363a"]
+          : ["#303238", "#55585e", "#55585e", "#303238"])
+      : [
+          colorForCluster(byId.get(edge.from).cluster),
+          edge.via ? colorForCluster(byId.get(edge.via).cluster) : FLOW_COLORS[edge.type],
+          edge.via ? colorForCluster(byId.get(edge.via).cluster) : FLOW_COLORS[edge.type],
+          colorForCluster(byId.get(edge.to).cluster),
+        ];
+    palette.forEach((color, index) => {
       stops[index].setAttribute("stop-color", color);
     });
   });
@@ -511,25 +516,7 @@ function createEdges() {
       stroke: `url(#flow-gradient-${edge.id})`,
     });
     const crest = makeSvg("path", { class: "flow-ribbon-crest" });
-    const directionCueLayer = makeSvg("g", {
-      class: "flow-direction-cues",
-      "aria-hidden": "true",
-    });
-    const directionCues = Array.from({ length: 2 }, () => {
-      const cue = makeSvg("g", { class: "flow-direction-cue" });
-      const underlay = makeSvg("path", {
-        class: "flow-chevron-underlay",
-        d: "M -6 -5 L 1 0 L -6 5",
-      });
-      const face = makeSvg("path", {
-        class: "flow-chevron-face",
-        d: "M -6 -5 L 1 0 L -6 5",
-      });
-      cue.append(underlay, face);
-      directionCueLayer.append(cue);
-      return cue;
-    });
-    group.append(bed, shadow, body, current, crest, directionCueLayer);
+    group.append(bed, shadow, body, current, crest);
 
     const labelGroup = makeSvg("g", {
       class: "edge-label-group",
@@ -555,7 +542,6 @@ function createEdges() {
       body,
       gradient,
       stops,
-      directionCues,
       labelGroup,
     });
   });
@@ -1064,24 +1050,6 @@ function updateScene(time) {
     const totalLength = elements.body.getTotalLength();
     const labelPoint = elements.body.getPointAtLength(totalLength * (edge.labelT ?? .5));
     elements.labelGroup.setAttribute("transform", `translate(${labelPoint.x.toFixed(1)} ${labelPoint.y.toFixed(1)})`);
-
-    elements.directionCues.forEach((cue, cueIndex) => {
-      const progress = prefersReducedMotion
-        ? .3 + cueIndex * .4
-        : (time * .00011 + index * .173 + cueIndex * .5) % 1;
-      const distance = totalLength * progress;
-      const point = elements.body.getPointAtLength(distance);
-      const comparisonDistance = distance > totalLength - 4
-        ? Math.max(0, distance - 4)
-        : Math.min(totalLength, distance + 4);
-      const comparisonPoint = elements.body.getPointAtLength(comparisonDistance);
-      const direction = distance > totalLength - 4 ? -1 : 1;
-      const angle = Math.atan2(
-        (comparisonPoint.y - point.y) * direction,
-        (comparisonPoint.x - point.x) * direction,
-      ) * 180 / Math.PI;
-      cue.setAttribute("transform", `translate(${point.x.toFixed(1)} ${point.y.toFixed(1)}) rotate(${angle.toFixed(1)})`);
-    });
   });
 }
 
