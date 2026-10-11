@@ -350,6 +350,25 @@ button { color: inherit; }
   animation: riverCurrent 4.1s linear infinite;
   animation-delay: var(--flow-delay);
 }
+.flow-direction-cue {
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+.flow-chevron-underlay,
+.flow-chevron-face {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.flow-chevron-underlay {
+  stroke: rgba(1,4,12,.94);
+  stroke-width: 5px;
+}
+.flow-chevron-face {
+  stroke: #b9f6ff;
+  stroke-width: 1.8px;
+  filter: drop-shadow(0 0 3px rgba(74,224,255,.78));
+}
 .flow-edge.is-lens,
 .flow-edge.is-focus { opacity: 1; }
 .flow-edge.is-lens .flow-ribbon-bed { opacity: .56; }
@@ -363,6 +382,12 @@ button { color: inherit; }
 .flow-edge.is-focus .flow-ribbon-current { opacity: .9; }
 .flow-edge.is-focus .flow-ribbon-crest { opacity: .7; }
 .flow-edge.is-muted { opacity: .07; }
+
+:root[data-theme="dark"] .flow-ribbon-crest { stroke: rgba(112,226,255,.72); }
+:root[data-theme="dark"] .flow-edge.is-lens .flow-ribbon-crest { opacity: .16; }
+:root[data-theme="dark"] .flow-edge.is-focus .flow-ribbon-crest { opacity: .24; }
+:root[data-theme="dark"] .flow-edge.is-lens .flow-direction-cue { opacity: .88; }
+:root[data-theme="dark"] .flow-edge.is-focus .flow-direction-cue { opacity: 1; }
 
 @keyframes riverCurrent {
   to { stroke-dashoffset: -270; }
