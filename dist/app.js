@@ -91,6 +91,248 @@ const edges = [
   { id: "model-runtime", from: "modelSecurity", to: "runtime", type: "policy", label: "approved model" },
 ];
 
+const integrationGuides = {
+  "airs-gateway": {
+    evidence: "PUBLIC · NATIVE",
+    mode: "Native Prisma AIRS capability",
+    summary: "AI Gateway is a native Prisma AIRS capability, so there is no separate AIRS-to-Gateway connector to install. Activation, workspaces, provider integrations, and scoped keys are configured in Strata Cloud Manager.",
+    prerequisites: [
+      "A Prisma AIRS tenant with AI Gateway activated",
+      "Strata Cloud Manager access",
+      "At least one LLM provider integration and workspace",
+    ],
+    steps: [
+      "Activate AI Gateway and create a workspace for the target team or application.",
+      "Add an LLM integration and provision the models that workspace may use.",
+      "Create a Gateway API key and use the workspace virtual key to scope requests and policy.",
+    ],
+    note: "Native platform relationship — no connector code is required between Prisma AIRS and AI Gateway.",
+    sources: [
+      { label: "AI Gateway overview", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-gateway/ai-gateway-overview" },
+      { label: "AI Gateway workspaces", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-gateway/ai-gateway-overview/ai-gateway-workspaces" },
+      { label: "Manage Gateway API keys", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-gateway/ai-gateway-configs/manage-gateway-api-keys" },
+    ],
+  },
+  "airs-runtime": {
+    evidence: "PUBLIC · API / SDK",
+    mode: "Code-level API intercept",
+    summary: "Prisma AIRS Runtime API can be embedded directly in an application or agent pipeline. It scans prompts, responses, and agent content against a named security profile and returns a verdict for the application to enforce.",
+    prerequisites: [
+      "AI Runtime API deployment profile",
+      "Runtime API application and API key",
+      "Configured API security profile name or ID",
+    ],
+    steps: [
+      "Create the deployment profile, Runtime API application, and API key in Strata Cloud Manager.",
+      "Create an API security profile with the required allow or block actions.",
+      "Install the official Python SDK and scan content before the protected model or tool call.",
+    ],
+    code: {
+      language: "Python",
+      label: "Official AIRS Runtime SDK pattern",
+      value: `import os
+import aisecurity
+from aisecurity.scan.inline.scanner import Scanner
+from aisecurity.generated_openapi_client.models.ai_profile import AiProfile
+
+aisecurity.init(api_key=os.environ["PANW_AI_SEC_API_KEY"])
+
+verdict = Scanner().sync_scan(
+    ai_profile=AiProfile(profile_name="Secure-AI"),
+    content={"prompt": user_prompt},
+    metadata={"app_user": user_id},
+)
+print(verdict)`,
+    },
+    note: "This shows API Intercept. Network Intercept is a separate traffic-routing deployment and does not require application code changes.",
+    sources: [
+      { label: "AIRS API overview", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-runtime-security/airs-api" },
+      { label: "Python SDK setup", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-runtime-security/airs-api/airs-apis-python-sdk" },
+      { label: "Developer API reference", url: "https://pan.dev/airs/" },
+    ],
+  },
+  "airs-endpoint": {
+    evidence: "PUBLIC · CONFIG",
+    mode: "Managed Cortex AES integration",
+    summary: "Cortex Agentic Endpoint Security (AES) connects to Prisma AIRS with a service account, retrieves the available Runtime API keys and security profiles, and centrally deploys AIRS hooks to developer endpoints.",
+    prerequisites: [
+      "Prisma AIRS Runtime API application",
+      "Cortex AES subscription",
+      "Service account with read access to API keys and profiles",
+    ],
+    steps: [
+      "Create a service account in Strata Cloud Manager and securely capture its client ID and client secret.",
+      "Create a Runtime API application, one API key per policy, and the matching security profiles.",
+      "Connect Prisma AIRS in the AES console, create the runtime policy, and deploy the managed hooks to endpoint groups.",
+    ],
+    note: "Configuration workflow — AES manages the endpoint hooks and API keys centrally, so Palo Alto Networks does not require per-device application code.",
+    sources: [
+      { label: "Prisma AIRS + Cortex AES setup", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-runtime-security/airs-api/prisma-airs-integration-with-cortex-aes" },
+    ],
+  },
+  "airs-redteam": {
+    evidence: "PUBLIC · TARGET API",
+    mode: "Red Team target connection",
+    summary: "AI Red Teaming connects to a model, application, or agent as a target. Public guides support preconfigured providers plus REST, streaming, WebSocket, private Network Channels, and custom adapters.",
+    prerequisites: [
+      "AI Red Teaming license and deployment profile",
+      "Target endpoint URL and its authentication details",
+      "A supported connection method for the target",
+    ],
+    steps: [
+      "Create and associate an AI Red Teaming deployment profile with the tenant.",
+      "Add the AI system as a model, application, or agent target and choose its connection method.",
+      "For a custom API, import a representative cURL request and replace the prompt value with {INPUT}.",
+    ],
+    code: {
+      language: "Shell",
+      label: "REST target request template",
+      value: `curl -X POST "$TARGET_URL" \\
+  -H "Authorization: Bearer $TARGET_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{"message":"{INPUT}"}'`,
+    },
+    note: "{INPUT} is the documented placeholder that AI Red Teaming replaces with attack prompts at scan time; adapt the JSON field to your target API.",
+    sources: [
+      { label: "Red Teaming target connection methods", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-red-teaming/identify-ai-system-risks-with-ai-red-teaming/get-started-with-prisma-airs-ai-red-teaming/targets/connection-methods" },
+      { label: "REST, streaming, and WebSocket targets", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-red-teaming/identify-ai-system-risks-with-ai-red-teaming/get-started-with-prisma-airs-ai-red-teaming/targets/connection-methods/add-a-target-rest-api-or-streaming-cm" },
+    ],
+  },
+  "airs-model": {
+    evidence: "PUBLIC · CLI / SDK",
+    mode: "Pre-deployment model scan",
+    summary: "AI Model Security exposes a CLI and Python SDK for scanning local, Hugging Face, and supported object-storage models against a Model Security Group before deployment.",
+    prerequisites: [
+      "AI Model Security license and deployment profile",
+      "SCM service account with the required IAM permissions",
+      "A Model Security Group matching the model source type",
+    ],
+    steps: [
+      "Install the Model Security client and configure service-account authentication.",
+      "Create or choose a Security Group whose source matches the model location.",
+      "Submit the model scan and use the PASS or FAIL result as the deployment gate.",
+    ],
+    code: {
+      language: "Python",
+      label: "Official Model Security SDK pattern",
+      value: `from model_security_client.api import ModelSecurityAPIClient
+
+client = ModelSecurityAPIClient(
+    base_url="https://api.sase.paloaltonetworks.com/aims"
+)
+
+result = client.scan(
+    security_group_uuid="<security-group-uuid>",
+    model_uri="<model-uri>",
+    labels={"env": "production"},
+)
+print(result.eval_outcome)`,
+    },
+    note: "The SDK reports the evaluation outcome; your pipeline is responsible for enforcing allow or block. The CLI exits non-zero when a model is unsafe.",
+    sources: [
+      { label: "Scanning models with CLI or SDK", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-supply-chain-security/ai-supply-chain-security/model-security-to-secure-your-ai-models/get-started-with-ai-model-security/scanning-models" },
+      { label: "AI Model Security overview", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-supply-chain-security/ai-supply-chain-security/model-security-to-secure-your-ai-models" },
+    ],
+  },
+  "gateway-runtime": {
+    evidence: "PUBLIC · NATIVE CONFIG",
+    mode: "Partner guardrail",
+    summary: "AI Gateway has a documented PANW Prisma AIRS partner guardrail. Gateway forwards governed request payloads to AI Runtime Security API Intercept for deep inspection before traffic reaches the LLM provider.",
+    prerequisites: [
+      "AI Gateway activated in the Americas region",
+      "AI Runtime Security API Intercept deployment profile and API key",
+      "An AI Gateway routing configuration",
+    ],
+    steps: [
+      "Create a Runtime API deployment profile and record its endpoint and generated API key.",
+      "Configure the PANW Prisma AIRS plugin under AI Gateway Admin Settings.",
+      "Create a Partner guardrail, select PANW Prisma AIRS Guardrail, and note its pg- ID.",
+      "Reference that pg- ID in the routing configuration and commit the change.",
+    ],
+    code: {
+      language: "JSON",
+      label: "AI Gateway routing configuration",
+      value: `{
+  "before_request_hooks": [
+    { "id": "<pg_prisma_airs_guardrail_id>" }
+  ]
+}`,
+    },
+    note: "This is the documented direct integration between these two nodes. The API endpoint and key are stored in the AI Gateway plugin configuration, not in the routing JSON.",
+    sources: [
+      { label: "Configure the Prisma AIRS guardrail", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-gateway/ai-gateway-guardrails/configure-ai-runtime-api-guardrail" },
+      { label: "Create a Gateway routing configuration", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-gateway/ai-gateway-configs/create-a-gateway-config" },
+    ],
+  },
+  "endpoint-runtime": {
+    evidence: "PUBLIC · MANAGED HOOKS",
+    mode: "Endpoint traffic and verdict path",
+    summary: "AES deploys and manages AIRS hooks on selected developer endpoints. Prompts, MCP tool calls, and supported network calls are sent to Runtime Security for inspection; AES enforces the returned verdict and records it with endpoint context.",
+    prerequisites: [
+      "Cortex AES subscription and endpoint scope",
+      "Prisma AIRS Runtime API application and security profiles",
+      "SCM service-account credentials for the AES connection",
+    ],
+    steps: [
+      "Create the SCM service account with read access to Prisma AIRS API keys and profiles.",
+      "Connect that service account in AES and choose the Runtime security profile for the policy.",
+      "Deploy the AES runtime policy; AES handles hooks, enforcement, developer notification, and event attribution.",
+    ],
+    note: "Managed integration — Palo Alto Networks documents central policy configuration rather than a customer-written endpoint snippet.",
+    sources: [
+      { label: "Prisma AIRS + Cortex AES setup", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-runtime-security/airs-api/prisma-airs-integration-with-cortex-aes" },
+    ],
+  },
+  "redteam-runtime": {
+    evidence: "PUBLIC · WORKFLOW",
+    mode: "Assessment-to-policy hardening loop",
+    summary: "AI Red Teaming tests the protected application, model, or agent as a target; Runtime Security enforces the production security profile. Public docs support this hardening loop, but do not describe an automatic findings-to-runtime-policy connector.",
+    prerequisites: [
+      "AI Red Teaming and AI Runtime Security enabled",
+      "The same application, model, or agent available as a Red Team target",
+      "Access to edit the Runtime API security profile",
+    ],
+    steps: [
+      "Run the Red Team scan against the protected target and review successful attacks and remediation guidance.",
+      "Translate relevant findings into detector actions, custom topics, or other Runtime security-profile controls.",
+      "Retest the target and confirm the Runtime policy blocks or logs the intended behavior.",
+    ],
+    note: "Evidence boundary — no public one-click sync or direct API handoff was found. This edge represents a documented operational feedback loop, not an automatic data integration.",
+    sources: [
+      { label: "Get started with AI Red Teaming", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-red-teaming/identify-ai-system-risks-with-ai-red-teaming/get-started-with-prisma-airs-ai-red-teaming" },
+      { label: "Configure a Runtime API security profile", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-runtime-security/airs-api/api-intercept-create-configure-security-profile" },
+    ],
+  },
+  "model-runtime": {
+    evidence: "PUBLIC · MANUAL GATE",
+    mode: "Model approval before runtime",
+    summary: "Model Security produces a PASS or FAIL evaluation before deployment, while Runtime Security protects live inference traffic. Public docs do not describe an automatic Model Security-to-Runtime policy sync.",
+    prerequisites: [
+      "A Model Security Group with blocking rules",
+      "A model source supported by the CLI or SDK",
+      "A deployment pipeline that can stop on a failed scan",
+    ],
+    steps: [
+      "Scan the exact model version that the deployment pipeline intends to promote.",
+      "Fail the promotion when the CLI exits non-zero or the SDK returns a failing evaluation.",
+      "Deploy only the approved artifact, then apply Runtime Security to its live prompt and response traffic.",
+    ],
+    code: {
+      language: "Shell",
+      label: "CI/CD model approval gate",
+      value: `model-security scan \\
+  --security-group-uuid "$SECURITY_GROUP_UUID" \\
+  --model-uri "$MODEL_URI" \\
+  -l env=production`,
+    },
+    note: "Evidence boundary — the CLI provides a machine-enforceable gate, but the pipeline owns promotion and Runtime Security remains a separately configured enforcement layer.",
+    sources: [
+      { label: "Scanning models with CLI or SDK", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-supply-chain-security/ai-supply-chain-security/model-security-to-secure-your-ai-models/get-started-with-ai-model-security/scanning-models" },
+      { label: "Prisma AIRS platform architecture", url: "https://docs.paloaltonetworks.com/prisma-airs/getting-started/prisma-airs-platform-architecture" },
+    ],
+  },
+};
+
 const views = {
   platform: {
     code: "VIEW 01",
@@ -202,7 +444,10 @@ function applyTheme(theme, persist = false) {
   nodeElements.forEach((element, id) => {
     element.style.setProperty("--node-color", colorForCluster(byId.get(id).cluster));
   });
-  if (state.selected) updateInspector(byId.get(state.selected));
+  if (state.selected) {
+    const openEdgeId = inspector.querySelector(".integration-accordion[open]")?.dataset.edgeId ?? null;
+    updateInspector(byId.get(state.selected), openEdgeId);
+  }
 
   if (persist) {
     try { localStorage.setItem(THEME_STORAGE_KEY, nextTheme); } catch {}
@@ -399,7 +644,140 @@ function applyVisualState() {
   updateViewText(focusId);
 }
 
-function updateInspector(node) {
+function createGuideSection(title, items, ordered = false) {
+  const section = document.createElement("section");
+  section.className = "integration-section";
+  const heading = document.createElement("h4");
+  heading.textContent = title;
+  const list = document.createElement(ordered ? "ol" : "ul");
+  items.forEach((text) => {
+    const item = document.createElement("li");
+    item.textContent = text;
+    list.append(item);
+  });
+  section.append(heading, list);
+  return section;
+}
+
+function createIntegrationAccordion(selectedNode, edge, connected, initiallyOpen = false) {
+  const guide = integrationGuides[edge.id];
+  const details = document.createElement("details");
+  details.className = "integration-accordion";
+  details.dataset.edgeId = edge.id;
+  details.style.setProperty("--connection-color", colorForCluster(connected.cluster));
+
+  const summary = document.createElement("summary");
+  const light = document.createElement("i");
+  light.className = "connection-light";
+  light.setAttribute("aria-hidden", "true");
+  const title = document.createElement("span");
+  title.className = "connection-title";
+  const name = document.createElement("strong");
+  name.textContent = connected.label;
+  const type = document.createElement("span");
+  type.textContent = edge.label;
+  title.append(name, type);
+  const badge = document.createElement("span");
+  badge.className = "integration-badge";
+  badge.textContent = guide?.evidence ?? "PUBLIC DOCS";
+  const chevron = document.createElement("span");
+  chevron.className = "accordion-chevron";
+  chevron.setAttribute("aria-hidden", "true");
+  chevron.textContent = "+";
+  summary.append(light, title, badge, chevron);
+
+  const panel = document.createElement("div");
+  panel.className = "integration-panel";
+  const mode = document.createElement("p");
+  mode.className = "integration-mode";
+  mode.textContent = guide?.mode ?? "Documented Prisma AIRS relationship";
+  const intro = document.createElement("p");
+  intro.className = "integration-summary";
+  intro.textContent = guide?.summary ?? `Review the official documentation for the ${selectedNode.label} and ${connected.label} relationship.`;
+  panel.append(mode, intro);
+
+  if (guide?.prerequisites?.length) panel.append(createGuideSection("Prerequisites", guide.prerequisites));
+  if (guide?.steps?.length) panel.append(createGuideSection("Implementation path", guide.steps, true));
+
+  if (guide?.code) {
+    const codeBlock = document.createElement("section");
+    codeBlock.className = "integration-code-section";
+    const codeHeader = document.createElement("div");
+    codeHeader.className = "integration-code-header";
+    const codeLabel = document.createElement("span");
+    codeLabel.textContent = guide.code.label;
+    const language = document.createElement("small");
+    language.textContent = guide.code.language;
+    const copy = document.createElement("button");
+    copy.type = "button";
+    copy.className = "copy-code-button";
+    copy.textContent = "Copy";
+    copy.setAttribute("aria-label", `Copy ${guide.code.label}`);
+    copy.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(guide.code.value);
+        copy.textContent = "Copied";
+      } catch {
+        copy.textContent = "Copy unavailable";
+      }
+      window.setTimeout(() => { copy.textContent = "Copy"; }, 1800);
+    });
+    codeHeader.append(codeLabel, language, copy);
+    const pre = document.createElement("pre");
+    const code = document.createElement("code");
+    code.textContent = guide.code.value;
+    pre.append(code);
+    codeBlock.append(codeHeader, pre);
+    panel.append(codeBlock);
+  }
+
+  if (guide?.note) {
+    const note = document.createElement("p");
+    note.className = "integration-note";
+    note.textContent = guide.note;
+    panel.append(note);
+  }
+
+  if (guide?.sources?.length) {
+    const sources = document.createElement("div");
+    sources.className = "integration-sources";
+    const sourceLabel = document.createElement("span");
+    sourceLabel.textContent = "Official sources";
+    const links = document.createElement("div");
+    guide.sources.forEach((source) => {
+      const link = document.createElement("a");
+      link.href = source.url;
+      link.target = "_blank";
+      link.rel = "noreferrer";
+      link.textContent = `${source.label} ↗`;
+      links.append(link);
+    });
+    sources.append(sourceLabel, links);
+    panel.append(sources);
+  }
+
+  const focusButton = document.createElement("button");
+  focusButton.type = "button";
+  focusButton.className = "focus-node-button";
+  focusButton.textContent = `Open ${connected.label} node`;
+  focusButton.addEventListener("click", () => {
+    selectNode(connected.id);
+    inspector.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
+  });
+  panel.append(focusButton);
+
+  details.append(summary, panel);
+  details.open = initiallyOpen;
+  details.addEventListener("toggle", () => {
+    if (!details.open) return;
+    details.parentElement?.querySelectorAll(".integration-accordion[open]").forEach((sibling) => {
+      if (sibling !== details) sibling.open = false;
+    });
+  });
+  return details;
+}
+
+function updateInspector(node, openEdgeId = null) {
   inspector.style.setProperty("--detail-color", colorForCluster(node.cluster));
   const icon = document.querySelector("#detailIcon");
   icon.src = node.asset;
@@ -419,22 +797,10 @@ function updateInspector(node) {
 
   const connections = connectionsFor(node.id);
   document.querySelector("#connectionCount").textContent = String(connections.length).padStart(2, "0");
-  const buttons = connections.map(({ edge, node: connected }) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "connection-button";
-    button.style.setProperty("--connection-color", colorForCluster(connected.cluster));
-    const light = document.createElement("i");
-    light.setAttribute("aria-hidden", "true");
-    const name = document.createElement("strong");
-    name.textContent = connected.label;
-    const type = document.createElement("span");
-    type.textContent = edge.label;
-    button.append(light, name, type);
-    button.addEventListener("click", () => selectNode(connected.id));
-    return button;
+  const accordions = connections.map(({ edge, node: connected }) => {
+    return createIntegrationAccordion(node, edge, connected, edge.id === openEdgeId);
   });
-  document.querySelector("#connectionList").replaceChildren(...buttons);
+  document.querySelector("#connectionList").replaceChildren(...accordions);
 
   const source = document.querySelector("#sourceLink");
   source.href = node.source;
