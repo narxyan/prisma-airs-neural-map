@@ -32,7 +32,7 @@
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=8" />
+    <link rel="stylesheet" href="./styles.css?v=9" />
   </head>
   <body>
     <canvas id="starfield" aria-hidden="true"></canvas>
@@ -78,28 +78,14 @@
     <main id="spaceStage" class="space-stage" aria-label="Interactive 3D map of Prisma AIRS capabilities">
       <svg id="linkLayer" class="link-layer" aria-label="Prisma AIRS traffic and integration paths">
         <defs>
-          <filter id="linkGlow" x="-80%" y="-80%" width="260%" height="260%">
-            <feGaussianBlur stdDeviation="4" result="blur" />
-            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          <filter id="flowBlur" x="-80%" y="-80%" width="260%" height="260%">
+            <feGaussianBlur stdDeviation="6" />
           </filter>
-          <marker id="arrow-data" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
-            <path d="M0 0 8 4 0 8Z" fill="#03c0e8" />
-          </marker>
-          <marker id="arrow-policy" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
-            <path d="M0 0 8 4 0 8Z" fill="#9e75ff" />
-          </marker>
-          <marker id="arrow-lifecycle" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
-            <path d="M0 0 8 4 0 8Z" fill="#ff9e57" />
-          </marker>
-          <marker id="arrow-telemetry" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
-            <path d="M0 0 8 4 0 8Z" fill="#73e6ff" />
-          </marker>
-          <marker id="arrow-capability" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
-            <path d="M0 0 8 4 0 8Z" fill="#b9c7dd" />
-          </marker>
+          <filter id="flowSoft" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="1.5" />
+          </filter>
         </defs>
         <g id="edgeLayer" aria-hidden="true"></g>
-        <g id="signalLayer" aria-hidden="true"></g>
       </svg>
 
       <div id="nodeLayer" class="node-layer"></div>
@@ -119,7 +105,7 @@
         <span id="viewCode">VIEW 01</span>
         <div>
           <strong id="viewTitle">Focused Prisma AIRS platform</strong>
-          <p id="viewDescription">Six core surfaces, one shared security platform. Hover or select any node to trace its direct paths.</p>
+          <p id="viewDescription">Six core surfaces, one shared security platform. Hover or select any node to trace its documented paths.</p>
         </div>
       </div>
 
@@ -151,7 +137,7 @@
         </div>
 
         <div class="detail-block">
-          <div class="detail-heading-row"><h3>Direct integrations</h3><span id="connectionCount">00</span></div>
+          <div class="detail-heading-row"><h3>Integration paths</h3><span id="connectionCount">00</span></div>
           <div id="connectionList" class="connection-list"></div>
         </div>
 
@@ -161,6 +147,6 @@
       </aside>
     </main>
 
-    <script src="./app.js?v=8" defer></script>
+    <script src="./app.js?v=9" defer></script>
   </body>
 </html>

@@ -80,15 +80,15 @@ const nodes = [
 ];
 
 const edges = [
-  { id: "airs-gateway", from: "airs", to: "gateway", type: "capability", label: "gateway pillar" },
-  { id: "airs-runtime", from: "airs", to: "runtime", type: "capability", label: "runtime pillar" },
-  { id: "airs-endpoint", from: "airs", to: "endpointSecurity", type: "capability", label: "AIRS + AES" },
-  { id: "airs-redteam", from: "airs", to: "redTeam", type: "capability", label: "assessment pillar" },
-  { id: "airs-model", from: "airs", to: "modelSecurity", type: "capability", label: "model assurance" },
-  { id: "gateway-runtime", from: "gateway", to: "runtime", type: "data", label: "policy-enforced traffic" },
-  { id: "endpoint-runtime", from: "endpointSecurity", to: "runtime", type: "data", label: "agent traffic" },
-  { id: "redteam-runtime", from: "redTeam", to: "runtime", type: "lifecycle", label: "findings harden policy" },
-  { id: "model-runtime", from: "modelSecurity", to: "runtime", type: "policy", label: "approved model" },
+  { id: "airs-gateway", from: "airs", to: "gateway", type: "capability", label: "gateway pillar", width: 8, bend: -7 },
+  { id: "airs-runtime", from: "airs", to: "runtime", type: "capability", label: "runtime pillar", width: 9, bend: 8 },
+  { id: "airs-endpoint", from: "airs", to: "endpointSecurity", type: "capability", label: "AIRS + AES", width: 8, bend: -5 },
+  { id: "airs-redteam", from: "airs", to: "redTeam", type: "capability", label: "assessment pillar", width: 8, bend: 7 },
+  { id: "airs-model", from: "airs", to: "modelSecurity", type: "capability", label: "model assurance", width: 8, bend: -7 },
+  { id: "gateway-runtime", from: "gateway", via: "airs", to: "runtime", type: "data", label: "policy-enforced traffic", width: 14, lane: -1.2, labelT: .24 },
+  { id: "endpoint-runtime", from: "endpointSecurity", via: "airs", to: "runtime", type: "data", label: "agent traffic", width: 12, lane: 1.2, labelT: .22 },
+  { id: "redteam-runtime", from: "redTeam", via: "airs", to: "runtime", type: "lifecycle", label: "findings harden policy", width: 11, lane: -1.1, labelT: .24 },
+  { id: "model-runtime", from: "modelSecurity", via: "airs", to: "runtime", type: "policy", label: "approved model", width: 10, lane: 1.1, labelT: .23 },
 ];
 
 const integrationGuides = {
@@ -258,7 +258,7 @@ print(result.eval_outcome)`,
   ]
 }`,
     },
-    note: "This is the documented direct integration between these two nodes. The API endpoint and key are stored in the AI Gateway plugin configuration, not in the routing JSON.",
+    note: "This is a native Prisma AIRS path: AI Gateway invokes the Prisma AIRS Runtime guardrail through the shared platform. The API endpoint and key are stored in the Gateway plugin configuration, not in the routing JSON.",
     sources: [
       { label: "Configure the Prisma AIRS guardrail", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-gateway/ai-gateway-guardrails/configure-ai-runtime-api-guardrail" },
       { label: "Create a Gateway routing configuration", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-gateway/ai-gateway-configs/create-a-gateway-config" },
@@ -338,7 +338,7 @@ const views = {
     code: "VIEW 01",
     title: "Focused Prisma AIRS platform",
     focus: "airs",
-    description: "Six core surfaces, one shared security platform. Hover or select any node to trace its direct paths.",
+    description: "Six core surfaces, one shared security platform. Hover or select any node to trace its documented paths.",
     nodes: ["airs", "gateway", "runtime", "endpointSecurity", "redTeam", "modelSecurity"],
     edges: ["airs-gateway", "airs-runtime", "airs-endpoint", "airs-redteam", "airs-model"],
   },
@@ -348,7 +348,7 @@ const views = {
     focus: "runtime",
     description: "Trace governed AI and coding-agent traffic into the Runtime Security enforcement layer.",
     nodes: ["airs", "gateway", "runtime", "endpointSecurity"],
-    edges: ["airs-runtime", "gateway-runtime", "endpoint-runtime"],
+    edges: ["gateway-runtime", "endpoint-runtime"],
   },
   lifecycle: {
     code: "VIEW 03",
@@ -356,7 +356,7 @@ const views = {
     focus: "redTeam",
     description: "Connect adversarial testing and model assurance to the controls that protect production AI.",
     nodes: ["airs", "redTeam", "modelSecurity", "runtime"],
-    edges: ["airs-redteam", "airs-model", "redteam-runtime", "model-runtime"],
+    edges: ["redteam-runtime", "model-runtime"],
   },
 };
 
@@ -366,8 +366,8 @@ const stage = document.querySelector("#spaceStage");
 const canvas = document.querySelector("#starfield");
 const context = canvas.getContext("2d");
 const linkLayer = document.querySelector("#linkLayer");
+const edgeDefs = linkLayer.querySelector("defs");
 const edgeLayer = document.querySelector("#edgeLayer");
-const signalLayer = document.querySelector("#signalLayer");
 const nodeLayer = document.querySelector("#nodeLayer");
 const inspector = document.querySelector("#inspector");
 const themeToggle = document.querySelector("#themeToggle");
@@ -392,9 +392,6 @@ const state = {
 const nodeElements = new Map();
 const edgeElements = new Map();
 const projected = new Map();
-let edgeGeometry = new Map();
-let signalObjects = [];
-let signalKey = "";
 let viewport = { width: window.innerWidth, height: window.innerHeight, dpr: window.devicePixelRatio || 1 };
 
 function makeSvg(tag, attrs = {}) {
@@ -444,6 +441,7 @@ function applyTheme(theme, persist = false) {
   nodeElements.forEach((element, id) => {
     element.style.setProperty("--node-color", colorForCluster(byId.get(id).cluster));
   });
+  updateEdgePalettes();
   if (state.selected) {
     const openEdgeId = inspector.querySelector(".integration-accordion[open]")?.dataset.edgeId ?? null;
     updateInspector(byId.get(state.selected), openEdgeId);
@@ -460,16 +458,60 @@ function connectionsFor(nodeId) {
     .map((edge) => ({ edge, node: byId.get(edge.from === nodeId ? edge.to : edge.from) }));
 }
 
+function updateEdgePalettes() {
+  edgeElements.forEach(({ stops }, edgeId) => {
+    const edge = edgeById.get(edgeId);
+    const start = colorForCluster(byId.get(edge.from).cluster);
+    const middle = edge.via
+      ? colorForCluster(byId.get(edge.via).cluster)
+      : FLOW_COLORS[edge.type];
+    const end = colorForCluster(byId.get(edge.to).cluster);
+    [start, middle, middle, end].forEach((color, index) => {
+      stops[index].setAttribute("stop-color", color);
+    });
+  });
+}
+
 function createEdges() {
   const paths = makeSvg("g");
   const labels = makeSvg("g");
-  edges.forEach((edge) => {
-    const path = makeSvg("path", {
-      id: `edge-${edge.id}`,
-      class: `edge-path ${edge.type}`,
-      "data-edge": edge.id,
-      "marker-end": `url(#arrow-${edge.type})`,
+  edges.forEach((edge, index) => {
+    const gradient = makeSvg("linearGradient", {
+      id: `flow-gradient-${edge.id}`,
+      gradientUnits: "userSpaceOnUse",
     });
+    const stops = [
+      makeSvg("stop", { offset: "0%" }),
+      makeSvg("stop", { offset: edge.via ? "43%" : "47%" }),
+      makeSvg("stop", { offset: edge.via ? "57%" : "53%" }),
+      makeSvg("stop", { offset: "100%" }),
+    ];
+    gradient.append(...stops);
+    edgeDefs.append(gradient);
+
+    const group = makeSvg("g", {
+      class: `flow-edge ${edge.type}`,
+      "data-edge": edge.id,
+    });
+    group.style.setProperty("--flow-width", `${edge.width ?? 9}px`);
+    group.style.setProperty("--flow-delay", `${-(index * .37).toFixed(2)}s`);
+
+    const bed = makeSvg("path", { class: "flow-ribbon-bed" });
+    const shadow = makeSvg("path", {
+      class: "flow-ribbon-shadow",
+      stroke: `url(#flow-gradient-${edge.id})`,
+    });
+    const body = makeSvg("path", {
+      id: `edge-${edge.id}`,
+      class: "flow-ribbon-body",
+      stroke: `url(#flow-gradient-${edge.id})`,
+    });
+    const current = makeSvg("path", {
+      class: "flow-ribbon-current",
+      stroke: `url(#flow-gradient-${edge.id})`,
+    });
+    const crest = makeSvg("path", { class: "flow-ribbon-crest" });
+    group.append(bed, shadow, body, current, crest);
 
     const labelGroup = makeSvg("g", {
       class: "edge-label-group",
@@ -487,11 +529,19 @@ function createEdges() {
     const text = makeSvg("text", { class: "edge-label-text", x: 0, y: 0 });
     text.textContent = edge.label.toUpperCase();
     labelGroup.append(background, text);
-    paths.append(path);
+    paths.append(group);
     labels.append(labelGroup);
-    edgeElements.set(edge.id, { path, labelGroup });
+    edgeElements.set(edge.id, {
+      group,
+      paths: [bed, shadow, body, current, crest],
+      body,
+      gradient,
+      stops,
+      labelGroup,
+    });
   });
   edgeLayer.append(paths, labels);
+  updateEdgePalettes();
 }
 
 function createNodes() {
@@ -566,44 +616,13 @@ function updateViewText(focusId = null) {
     const count = connectionsFor(focusId).length;
     document.querySelector("#viewCode").textContent = node.glyph;
     document.querySelector("#viewTitle").textContent = node.label;
-    document.querySelector("#viewDescription").textContent = `${count} direct integration${count === 1 ? "" : "s"} illuminated. Select the node to inspect details.`;
+    document.querySelector("#viewDescription").textContent = `${count} documented path${count === 1 ? "" : "s"} illuminated. Select the node to inspect details.`;
     return;
   }
   const view = views[state.view];
   document.querySelector("#viewCode").textContent = view.code;
   document.querySelector("#viewTitle").textContent = view.title;
   document.querySelector("#viewDescription").textContent = view.description;
-}
-
-function rebuildSignals(edgeIds, focused) {
-  const key = `${focused ? "focus" : "view"}:${edgeIds.join("|")}`;
-  if (key === signalKey) return;
-  signalKey = key;
-  signalObjects = [];
-  signalLayer.replaceChildren();
-
-  edgeIds.forEach((edgeId, index) => {
-    const edge = edgeById.get(edgeId);
-    if (!edge) return;
-    const packet = makeSvg("rect", {
-      class: "signal-packet",
-      x: -2.8,
-      y: -2.8,
-      width: 5.6,
-      height: 5.6,
-      rx: 1,
-      fill: FLOW_COLORS[edge.type],
-      opacity: focused ? 1 : .9,
-      transform: "rotate(45)",
-    });
-    signalLayer.append(packet);
-    signalObjects.push({
-      element: packet,
-      edgeId,
-      phase: (index * .193) % 1,
-      speed: .000045 + (index % 4) * .000006,
-    });
-  });
 }
 
 function applyVisualState() {
@@ -630,17 +649,16 @@ function applyVisualState() {
     element.classList.toggle("is-view-muted", !focusId && !viewNodes.has(id));
   });
 
-  edgeElements.forEach(({ path, labelGroup }, id) => {
+  edgeElements.forEach(({ group, labelGroup }, id) => {
     const isFocus = focusId ? focusEdges.has(id) : lensEdges.has(id);
     const isLens = !focusId && viewEdges.has(id);
-    path.classList.toggle("is-focus", isFocus);
-    path.classList.toggle("is-lens", isLens);
-    path.classList.toggle("is-muted", Boolean(focusId) && !isFocus);
+    group.classList.toggle("is-focus", isFocus);
+    group.classList.toggle("is-lens", isLens);
+    group.classList.toggle("is-muted", Boolean(focusId) && !isFocus);
     labelGroup.classList.toggle("is-focus", isFocus);
     labelGroup.classList.toggle("is-lens", isLens);
   });
 
-  rebuildSignals(focusId ? [...focusEdges] : view.edges, Boolean(focusId));
   updateViewText(focusId);
 }
 
@@ -945,12 +963,59 @@ function projectNode(node, time) {
   };
 }
 
-function quadraticPoint(geometry, t) {
-  const one = 1 - t;
-  return {
-    x: one * one * geometry.a.x + 2 * one * t * geometry.c.x + t * t * geometry.b.x,
-    y: one * one * geometry.a.y + 2 * one * t * geometry.c.y + t * t * geometry.b.y,
+function normalFor(a, b) {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const length = Math.max(1, Math.hypot(dx, dy));
+  return { x: -dy / length, y: dx / length };
+}
+
+function directRibbonPath(edge, a, b, index, time) {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const normal = normalFor(a, b);
+  const drift = prefersReducedMotion ? 0 : Math.sin(time * .00055 + index * .9) * 2.2;
+  const bend = (edge.bend ?? ((a.z - b.z) * .055 + ((index % 3) - 1) * 8)) + drift;
+  const c1 = {
+    x: a.x + dx * .34 + normal.x * bend,
+    y: a.y + dy * .34 + normal.y * bend,
   };
+  const c2 = {
+    x: a.x + dx * .66 + normal.x * bend,
+    y: a.y + dy * .66 + normal.y * bend,
+  };
+  return `M ${a.x.toFixed(1)} ${a.y.toFixed(1)} C ${c1.x.toFixed(1)} ${c1.y.toFixed(1)} ${c2.x.toFixed(1)} ${c2.y.toFixed(1)} ${b.x.toFixed(1)} ${b.y.toFixed(1)}`;
+}
+
+function routedRibbonPath(edge, a, via, b, index, time) {
+  const normal = normalFor(a, b);
+  const fluid = prefersReducedMotion ? 0 : Math.sin(time * .00048 + index * .82) * 1.8;
+  const lane = (edge.lane ?? 0) * 7 + fluid;
+  const junction = {
+    x: via.x + normal.x * lane,
+    y: via.y + normal.y * lane,
+  };
+  const tangent = {
+    x: (b.x - a.x) * .14,
+    y: (b.y - a.y) * .14,
+  };
+  const firstControl = {
+    x: a.x + (junction.x - a.x) * .42 + normal.x * lane * .24,
+    y: a.y + (junction.y - a.y) * .42 + normal.y * lane * .24,
+  };
+  const intoJunction = {
+    x: junction.x - tangent.x,
+    y: junction.y - tangent.y,
+  };
+  const outOfJunction = {
+    x: junction.x + tangent.x,
+    y: junction.y + tangent.y,
+  };
+  const lastControl = {
+    x: b.x - (b.x - junction.x) * .42 + normal.x * lane * .24,
+    y: b.y - (b.y - junction.y) * .42 + normal.y * lane * .24,
+  };
+  return `M ${a.x.toFixed(1)} ${a.y.toFixed(1)} C ${firstControl.x.toFixed(1)} ${firstControl.y.toFixed(1)} ${intoJunction.x.toFixed(1)} ${intoJunction.y.toFixed(1)} ${junction.x.toFixed(1)} ${junction.y.toFixed(1)} C ${outOfJunction.x.toFixed(1)} ${outOfJunction.y.toFixed(1)} ${lastControl.x.toFixed(1)} ${lastControl.y.toFixed(1)} ${b.x.toFixed(1)} ${b.y.toFixed(1)}`;
 }
 
 function updateScene(time) {
@@ -963,36 +1028,23 @@ function updateScene(time) {
     element.style.zIndex = String(Math.round(1000 + point.z));
   });
 
-  edgeGeometry = new Map();
   edges.forEach((edge, index) => {
     const a = projected.get(edge.from);
     const b = projected.get(edge.to);
-    const bend = ((a.z - b.z) * .055) + ((index % 3) - 1) * 8;
-    const dx = b.x - a.x;
-    const dy = b.y - a.y;
-    const length = Math.max(1, Math.hypot(dx, dy));
-    const nx = -dy / length;
-    const ny = dx / length;
-    const c = {
-      x: (a.x + b.x) / 2 + nx * bend,
-      y: (a.y + b.y) / 2 + ny * bend,
-    };
-    const geometry = { a, b, c };
-    edgeGeometry.set(edge.id, geometry);
+    const via = edge.via ? projected.get(edge.via) : null;
+    const d = via
+      ? routedRibbonPath(edge, a, via, b, index, time)
+      : directRibbonPath(edge, a, b, index, time);
     const elements = edgeElements.get(edge.id);
-    elements.path.setAttribute("d", `M ${a.x.toFixed(1)} ${a.y.toFixed(1)} Q ${c.x.toFixed(1)} ${c.y.toFixed(1)} ${b.x.toFixed(1)} ${b.y.toFixed(1)}`);
-    const midpoint = quadraticPoint(geometry, .5);
-    elements.labelGroup.setAttribute("transform", `translate(${midpoint.x.toFixed(1)} ${midpoint.y.toFixed(1)})`);
-  });
+    elements.paths.forEach((path) => path.setAttribute("d", d));
+    elements.gradient.setAttribute("x1", a.x.toFixed(1));
+    elements.gradient.setAttribute("y1", a.y.toFixed(1));
+    elements.gradient.setAttribute("x2", b.x.toFixed(1));
+    elements.gradient.setAttribute("y2", b.y.toFixed(1));
 
-  signalObjects.forEach((signal) => {
-    const geometry = edgeGeometry.get(signal.edgeId);
-    if (!geometry) return;
-    const t = (time * signal.speed + signal.phase) % 1;
-    const point = quadraticPoint(geometry, t);
-    signal.element.setAttribute("x", (point.x - 2.8).toFixed(1));
-    signal.element.setAttribute("y", (point.y - 2.8).toFixed(1));
-    signal.element.setAttribute("transform", `rotate(45 ${point.x.toFixed(1)} ${point.y.toFixed(1)})`);
+    const totalLength = elements.body.getTotalLength();
+    const labelPoint = elements.body.getPointAtLength(totalLength * (edge.labelT ?? .5));
+    elements.labelGroup.setAttribute("transform", `translate(${labelPoint.x.toFixed(1)} ${labelPoint.y.toFixed(1)})`);
   });
 }
 
