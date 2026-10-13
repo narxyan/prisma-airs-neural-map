@@ -29,8 +29,8 @@ const nodes = [
     pos: [0, 0, 105], mobilePos: [0, 0, 105], size: 78, asset: `${A}prisma-airs.svg`, important: true,
     eyebrow: "Unified AI security platform",
     summary: "A unified platform for discovering, assessing, and protecting AI applications, models, agents, data, and infrastructure.",
-    role: "Coordinate the focused gateway, runtime, endpoint, red-team, supply-chain, and SaaS-agent paths shown in this map.",
-    facts: ["One platform across the AI lifecycle", "Shared protection and governance context", "Focused here on six connected security surfaces"],
+    role: "Coordinate the five official AIRS capability pillars: Gateway, Runtime Security, Agent Identity, Supply Chain Security, and Red Teaming.",
+    facts: ["Five official AIRS capability pillars", "Shared protection and governance context", "Supporting integrations appear in their relevant workflow views"],
     source: "https://docs.paloaltonetworks.com/prisma-airs/getting-started/prisma-airs-platform-architecture",
   },
   {
@@ -53,7 +53,8 @@ const nodes = [
   },
   {
     id: "endpointSecurity", label: "Endpoint Security", meta: "secure agent endpoints", cluster: "endpoint", glyph: "AES",
-    pos: [350, 115, -30], mobilePos: [360, 15, -30], size: 54, asset: `${A}runtime-platform.svg`, important: true,
+    pos: [385, 70, -30], mobilePos: [360, 15, -30], size: 54, asset: `${A}runtime-platform.svg`, important: true,
+    hideOutsideViews: true,
     eyebrow: "Agentic endpoint protection",
     summary: "Cortex Agentic Endpoint Security protects the developer endpoint where autonomous coding agents, extensions, and local AI artifacts operate.",
     role: "Pair endpoint discovery and local enforcement with Prisma AIRS Runtime Security inspection for AI coding-agent activity.",
@@ -72,7 +73,7 @@ const nodes = [
   {
     id: "supplyChain", label: "AI Supply Chain Security", meta: "validate artifacts", cluster: "model", glyph: "SC",
     clusterLabel: "SUPPLY CHAIN · VALIDATE ARTIFACTS",
-    pos: [0, 205, -90], mobilePos: [-40, 330, -90], size: 56, asset: `${A}model-manufacturing.svg`, important: true,
+    pos: [0, 205, -90], mobilePos: [-60, 250, -90], size: 56, asset: `${A}model-manufacturing.svg`, important: true,
     eyebrow: "Pre-production artifact assurance",
     summary: "A unified supply-chain capability that evaluates AI models and agent skills before they reach production.",
     role: "Scan and gate model files and skill packages, then use their verdicts as evidence in the release process.",
@@ -84,14 +85,18 @@ const nodes = [
     source: "https://docs.paloaltonetworks.com/prisma-airs/ai-supply-chain-security/ai-supply-chain-security",
   },
   {
-    id: "saasAgent", label: "SaaS Agent Security", meta: "govern SaaS agents", cluster: "agent", glyph: "SAS",
-    clusterLabel: "SAAS AGENT · GOVERN",
-    pos: [305, 245, 45], mobilePos: [360, 305, 45], size: 52, asset: `${A}gateway-identity.svg`, important: true,
-    eyebrow: "SaaS agent posture and defense",
-    summary: "Discovers and governs AI agents built on supported SaaS platforms, with posture monitoring, remediation guidance, and runtime protection where supported.",
-    role: "Onboard SaaS agent platforms, inventory agents and their permissions, identify risk, and apply platform-supported protection workflows.",
-    facts: ["Agent inventory and posture visibility", "Risk recommendations and remediation", "Runtime protection on supported SaaS platforms"],
-    source: "https://docs.paloaltonetworks.com/prisma-airs/ai-agent-identity/saas-agent-security-overview",
+    id: "agentIdentity", label: "AI Agent Identity", meta: "govern agents + MCP", cluster: "agent", glyph: "ID",
+    clusterLabel: "AGENT IDENTITY · GOVERN",
+    pos: [300, 255, 45], mobilePos: [260, 450, 45], size: 52, asset: `${A}gateway-identity.svg`, important: true,
+    eyebrow: "Zero-trust agent governance",
+    summary: "Secures AI agents and MCP-based workflows through centralized identity, posture, access, and runtime governance.",
+    role: "Unify SaaS agent visibility and posture with centralized MCP security so agent access, tools, and behavior can be governed consistently.",
+    facts: ["SaaS Agent Security for discovery and posture", "Centralized Prisma AIRS MCP Server security", "Identity-aware governance for agents and tools"],
+    subcaps: [
+      { label: "SaaS Agent Security", meta: "discover + govern", asset: `${A}runtime-visibility.svg` },
+      { label: "MCP Security", meta: "secure tools", asset: `${A}gateway-controls.svg` },
+    ],
+    source: "https://docs.paloaltonetworks.com/prisma-airs/ai-agent-identity",
   },
 ];
 
@@ -101,12 +106,12 @@ const edges = [
   { id: "airs-endpoint", from: "airs", to: "endpointSecurity", type: "capability", label: "AIRS + AES", width: 8, bend: -5 },
   { id: "airs-redteam", from: "airs", to: "redTeam", type: "capability", label: "assessment pillar", width: 8, bend: 7 },
   { id: "airs-supply", from: "airs", to: "supplyChain", type: "capability", label: "supply chain pillar", width: 9, bend: -7 },
-  { id: "airs-saas-agent", from: "airs", to: "saasAgent", type: "capability", label: "agent posture", width: 8, bend: 7 },
+  { id: "airs-agent-identity", from: "airs", to: "agentIdentity", type: "capability", label: "identity pillar", width: 9, bend: 7 },
   { id: "gateway-runtime", from: "gateway", via: "airs", to: "runtime", type: "data", label: "policy-enforced traffic", width: 14, lane: -1.2, labelT: .24 },
   { id: "endpoint-runtime", from: "endpointSecurity", via: "airs", to: "runtime", type: "data", label: "agent traffic", width: 12, lane: 1.2, labelT: .22 },
   { id: "redteam-runtime", from: "redTeam", via: "airs", to: "runtime", type: "lifecycle", label: "findings harden policy", width: 11, lane: -1.1, labelT: .24 },
   { id: "supply-runtime", from: "supplyChain", via: "airs", to: "runtime", type: "policy", label: "approved artifacts", width: 10, lane: 1.1, labelT: .23 },
-  { id: "saasagent-runtime", from: "saasAgent", via: "airs", to: "runtime", type: "telemetry", label: "agent risk + runtime", width: 11, lane: 2, labelT: .24 },
+  { id: "agentidentity-runtime", from: "agentIdentity", via: "airs", to: "runtime", type: "telemetry", label: "identity + runtime", width: 11, lane: 2, labelT: .24 },
 ];
 
 const integrationGuides = {
@@ -237,24 +242,25 @@ print(verdict)`,
       { label: "AI Skill Security (Preview)", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-supply-chain-security/ai-supply-chain-security/ai-skill-security" },
     ],
   },
-  "airs-saas-agent": {
+  "airs-agent-identity": {
     evidence: "PUBLIC · NATIVE",
-    mode: "SaaS agent platform onboarding",
-    summary: "SaaS Agent Security is a Prisma AIRS capability for discovering and governing AI agents on supported SaaS platforms. The workflow centers on platform onboarding, agent inventory, posture findings, and supported remediation or runtime controls.",
+    mode: "Native AIRS identity pillar",
+    summary: "AI Agent Identity is an official Prisma AIRS pillar. It brings SaaS Agent Security and the Prisma AIRS MCP Server into a shared governance surface for agent discovery, posture, access, tools, and runtime protection.",
     prerequisites: [
-      "SaaS Agent Security entitlement",
-      "Strata Cloud Manager access",
-      "Administrator access to a supported SaaS agent platform",
+      "A Prisma AIRS tenant and Strata Cloud Manager access",
+      "The applicable SaaS Agent Security or AI Runtime API entitlement",
+      "Administrator access to the agent platform or MCP client environment",
     ],
     steps: [
-      "Activate SaaS Agent Security in the Prisma AIRS tenant.",
-      "Onboard the supported SaaS platform and grant the documented permissions.",
-      "Review agent inventory, posture findings, recommendations, and available protection actions.",
+      "Choose the SaaS Agent Security or MCP Security branch for the target workflow.",
+      "Onboard the supported agent platform or configure the Prisma AIRS MCP Server and client authentication.",
+      "Apply identity, posture, security-profile, and runtime controls; then monitor agent and MCP activity.",
     ],
-    note: "Native capability — the public workflow is platform onboarding and policy configuration, not a customer-written connector between two Prisma products.",
+    note: "Native pillar — SaaS Agent Security uses platform onboarding, while MCP Security uses the documented Prisma AIRS MCP endpoint and client configuration.",
     sources: [
+      { label: "AI Agent Identity", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-agent-identity" },
       { label: "SaaS Agent Security overview", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-agent-identity/saas-agent-security-overview" },
-      { label: "SaaS Agent Security documentation", url: "https://docs.paloaltonetworks.com/saas-agent-security" },
+      { label: "Prisma AIRS MCP Server", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-agent-identity/prisma-airs-mcp-server-for-centralized-ai-agent-security" },
     ],
   },
   "gateway-runtime": {
@@ -346,24 +352,25 @@ print(verdict)`,
       { label: "Prisma AIRS platform architecture", url: "https://docs.paloaltonetworks.com/prisma-airs/getting-started/prisma-airs-platform-architecture" },
     ],
   },
-  "saasagent-runtime": {
+  "agentidentity-runtime": {
     evidence: "PUBLIC · PLATFORM WORKFLOW",
-    mode: "Agent posture and runtime protection",
-    summary: "SaaS Agent Security combines posture visibility with runtime protection on supported SaaS agent platforms. Runtime Security remains the broader Prisma AIRS enforcement surface for live AI traffic.",
+    mode: "Identity-aware runtime protection",
+    summary: "AI Agent Identity contributes agent, platform, and MCP context while Runtime Security inspects live AI traffic. SaaS Agent Security and the Prisma AIRS MCP Server provide documented paths into that protection model.",
     prerequisites: [
-      "SaaS Agent Security activated",
-      "A supported SaaS agent platform onboarded",
-      "The applicable runtime or protection policy enabled for that platform",
+      "AI Agent Identity and AI Runtime Security capabilities activated as required",
+      "A supported SaaS agent platform or MCP client configured",
+      "An applicable AI security profile and authentication method",
     ],
     steps: [
-      "Discover the SaaS agents, permissions, tools, and data access in the onboarded platform.",
-      "Prioritize posture findings and apply the available recommendation or remediation.",
-      "Enable supported runtime protection and review security events alongside agent context.",
+      "Discover the agent, its permissions, connected tools, and data access.",
+      "Attach the applicable security profile through the supported SaaS or MCP workflow.",
+      "Review runtime events, posture findings, and agent context together when remediating risk.",
     ],
-    note: "Platform workflow — public documentation describes native posture and supported runtime capabilities, not a customer-written AIRS-to-AIRS connector.",
+    note: "Platform workflow — the exact enforcement path depends on whether the agent is onboarded through a supported SaaS platform or protected through the Prisma AIRS MCP Server.",
     sources: [
+      { label: "AI Agent Identity", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-agent-identity" },
       { label: "SaaS Agent Security overview", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-agent-identity/saas-agent-security-overview" },
-      { label: "SaaS Agent Security documentation", url: "https://docs.paloaltonetworks.com/saas-agent-security" },
+      { label: "Configure MCP Server Security", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-agent-identity/understanding-the-prisma-airs-mcp-server/configure-mcp-server-security-using-prisma-airs" },
     ],
   },
 };
@@ -373,17 +380,17 @@ const views = {
     code: "VIEW 01",
     title: "Focused Prisma AIRS platform",
     focus: "airs",
-    description: "Six connected security surfaces, one platform. Supply Chain expands into Model and Skill Security.",
-    nodes: ["airs", "gateway", "runtime", "endpointSecurity", "redTeam", "supplyChain", "saasAgent"],
-    edges: ["airs-gateway", "airs-runtime", "airs-endpoint", "airs-redteam", "airs-supply", "airs-saas-agent"],
+    description: "Five official AIRS pillars around one platform core, with child capabilities grouped under their parent pillar.",
+    nodes: ["airs", "gateway", "runtime", "redTeam", "supplyChain", "agentIdentity"],
+    edges: ["airs-gateway", "airs-runtime", "airs-redteam", "airs-supply", "airs-agent-identity"],
   },
   runtime: {
     code: "VIEW 02",
     title: "Live AI traffic protection",
     focus: "runtime",
-    description: "Trace governed AI, endpoint, and SaaS-agent paths into the Runtime Security enforcement layer.",
-    nodes: ["airs", "gateway", "runtime", "endpointSecurity", "saasAgent"],
-    edges: ["gateway-runtime", "endpoint-runtime", "saasagent-runtime"],
+    description: "Trace governed AI, endpoint, identity, and MCP paths into the Runtime Security enforcement layer.",
+    nodes: ["airs", "gateway", "runtime", "endpointSecurity", "agentIdentity"],
+    edges: ["gateway-runtime", "endpoint-runtime", "agentidentity-runtime"],
   },
   lifecycle: {
     code: "VIEW 03",
@@ -702,23 +709,31 @@ function applyVisualState() {
   const lensEdges = new Set(lensConnections.map(({ edge }) => edge.id));
 
   nodeElements.forEach((element, id) => {
+    const node = byId.get(id);
     const isLensFocus = id === lensFocusId;
     const isLensRelated = Boolean(lensFocusId) && viewNodes.has(id) && id !== lensFocusId;
+    const isViewHidden = Boolean(!focusId && node.hideOutsideViews && !viewNodes.has(id));
     element.classList.toggle("is-focused", id === focusId || isLensFocus);
     element.classList.toggle("is-related", (Boolean(focusId) && relatedNodes.has(id)) || isLensRelated);
     element.classList.toggle("is-muted", Boolean(focusId) && id !== focusId && !relatedNodes.has(id));
     element.classList.toggle("is-view-active", !focusId && viewNodes.has(id));
     element.classList.toggle("is-view-muted", !focusId && !viewNodes.has(id));
+    element.classList.toggle("is-view-hidden", isViewHidden);
   });
 
   edgeElements.forEach(({ group, labelGroup }, id) => {
+    const edge = edgeById.get(id);
+    const hasHiddenEndpoint = [edge.from, edge.to]
+      .some((nodeId) => byId.get(nodeId)?.hideOutsideViews && !viewNodes.has(nodeId));
     const isFocus = focusId ? focusEdges.has(id) : lensEdges.has(id);
     const isLens = !focusId && viewEdges.has(id);
     group.classList.toggle("is-focus", isFocus);
     group.classList.toggle("is-lens", isLens);
     group.classList.toggle("is-muted", Boolean(focusId) && !isFocus);
+    group.classList.toggle("is-view-hidden", !focusId && hasHiddenEndpoint);
     labelGroup.classList.toggle("is-focus", isFocus);
     labelGroup.classList.toggle("is-lens", isLens);
+    labelGroup.classList.toggle("is-view-hidden", !focusId && hasHiddenEndpoint);
   });
 
   updateViewText(focusId);

@@ -14,6 +14,7 @@ feature artwork is mapped by function instead of inventing new marks.
 - `model-*.svg` — official feature artwork from the [AI Model Security product page](https://www.paloaltonetworks.com/ai-security/ai-model-security)
 - `model-manufacturing.svg` identifies the parent [AI Supply Chain Security](https://docs.paloaltonetworks.com/prisma-airs/ai-supply-chain-security/ai-supply-chain-security) node; `model-inspection.svg` identifies its Model Security child.
 - `model-visibility.svg` is reused for the [AI Skill Security (Preview)](https://docs.paloaltonetworks.com/prisma-airs/ai-supply-chain-security/ai-supply-chain-security/ai-skill-security) child because Palo Alto Networks does not publish a separate downloadable Skill Security mark.
-- `gateway-identity.svg` is reused for [SaaS Agent Security](https://docs.paloaltonetworks.com/prisma-airs/ai-agent-identity/saas-agent-security-overview) because the available official artwork best represents agent identity and posture.
+- `gateway-identity.svg` identifies the parent [AI Agent Identity](https://docs.paloaltonetworks.com/prisma-airs/ai-agent-identity) pillar because the available official artwork best represents agent identity and posture.
+- `runtime-visibility.svg` and `gateway-controls.svg` identify the SaaS Agent Security and MCP Security children under AI Agent Identity; Palo Alto Networks does not publish separate downloadable marks for those documentation sections.
 
 All product names and marks remain the property of their respective owner.

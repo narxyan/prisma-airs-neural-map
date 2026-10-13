@@ -364,6 +364,8 @@ button { color: inherit; }
 .flow-edge.is-focus .flow-ribbon-current { opacity: .9; }
 .flow-edge.is-focus .flow-ribbon-crest { opacity: .7; }
 .flow-edge.is-muted { opacity: .07; }
+.flow-edge.is-view-hidden,
+.edge-label-group.is-view-hidden { opacity: 0; visibility: hidden; }
 
 :root[data-theme="dark"] .flow-edge {
   --flow-scale: .62;
@@ -438,6 +440,7 @@ button { color: inherit; }
   transition: opacity .22s ease, filter .22s ease;
 }
 .space-node.is-view-muted { opacity: .38; }
+.space-node.is-view-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 .space-node.is-muted { opacity: .17; }
 .space-node.is-view-active { opacity: 1; }
 
