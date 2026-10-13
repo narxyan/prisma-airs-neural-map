@@ -25,8 +25,8 @@
   --edge-label-text: #dce7fb;
   --node-label-text: #f5f8ff;
   --node-label-meta: #7f8da9;
-  --node-label-bg: rgba(3,6,14,.76);
-  --node-label-active-bg: rgba(4,8,18,.93);
+  --node-label-bg: rgba(3,6,14,.91);
+  --node-label-active-bg: rgba(4,8,18,.98);
   --legend-title: #d9e2f5;
   --legend-text: #b6c1d8;
   --guide-text: #a9b5cb;
@@ -87,8 +87,8 @@
   --edge-label-text: #243550;
   --node-label-text: #0c1830;
   --node-label-meta: #52637d;
-  --node-label-bg: rgba(246,250,255,.9);
-  --node-label-active-bg: rgba(255,255,255,.97);
+  --node-label-bg: rgba(250,252,255,.96);
+  --node-label-active-bg: rgba(255,255,255,.995);
   --legend-title: #1a2942;
   --legend-text: #40516e;
   --guide-text: #465873;
@@ -289,7 +289,7 @@ button { color: inherit; }
 .space-stage {
   position: fixed;
   inset: 0;
-  overflow: hidden;
+  overflow: clip;
   cursor: grab;
   touch-action: none;
 }
@@ -425,10 +425,10 @@ button { color: inherit; }
   position: absolute;
   top: 0;
   left: 0;
-  width: max(104px, calc(var(--node-render-size) + 30px));
+  width: max(112px, calc(var(--node-render-size) + 34px));
   display: grid;
   justify-items: center;
-  gap: 8px;
+  gap: 6px;
   padding: 0;
   color: var(--text);
   border: 0;
@@ -510,22 +510,23 @@ button { color: inherit; }
 }
 
 .node-label {
-  min-width: 104px;
-  max-width: 148px;
+  min-width: 112px;
+  max-width: 158px;
   display: grid;
   justify-items: center;
   gap: 2px;
-  padding: 5px 7px 6px;
+  padding: 6px 9px 7px;
   color: var(--node-label-text);
   text-align: center;
   border: 1px solid rgba(154,173,210,.16);
-  border-radius: 6px;
+  border-radius: 7px;
   background: var(--node-label-bg);
+  box-shadow: 0 8px 22px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.035);
   backdrop-filter: blur(8px);
   transition: border-color .22s ease, background .22s ease;
 }
-.node-label strong { font-size: 12px; line-height: 1.08; letter-spacing: -.01em; }
-.node-label small { color: var(--node-label-meta); font: 500 8px/1 var(--font-mono); letter-spacing: .07em; text-transform: uppercase; }
+.node-label strong { font-size: 12px; line-height: 1.14; letter-spacing: -.01em; text-wrap: balance; overflow-wrap: anywhere; }
+.node-label small { color: var(--node-label-meta); font: 500 7.5px/1.18 var(--font-mono); letter-spacing: .065em; text-transform: uppercase; text-wrap: balance; }
 
 .space-node.is-focused .node-face,
 .space-node.is-related .node-face,
@@ -566,7 +567,7 @@ button { color: inherit; }
   border-color: color-mix(in srgb, var(--node-color) 42%, rgba(189,204,236,.28));
 }
 .space-node.is-child .node-label {
-  max-width: 136px;
+  max-width: 148px;
 }
 
 .level-legend {
@@ -1015,10 +1016,11 @@ button { color: inherit; }
   .interaction-guide span:nth-of-type(4),
   .interaction-guide i:nth-of-type(2),
   .interaction-guide i:nth-of-type(4) { display: none; }
-  .space-node { width: max(92px, calc(var(--node-render-size) + 24px)); gap: 6px; }
-  .node-label { min-width: 88px; max-width: 108px; padding: 4px 5px 5px; }
-  .node-label strong { font-size: 10px; }
-  .node-label small { font-size: 7px; }
+  .space-node { width: max(104px, calc(var(--node-render-size) + 26px)); gap: 5px; }
+  .node-label { min-width: 96px; max-width: 124px; padding: 5px 7px 6px; }
+  .space-node.is-child .node-label { max-width: 124px; }
+  .node-label strong { font-size: 10.5px; line-height: 1.16; }
+  .node-label small { font-size: 6.8px; line-height: 1.2; }
   .space-node.is-view-muted { opacity: .16; }
   .space-node.is-view-muted .node-label { opacity: 0; visibility: hidden; }
   .edge-label-group.is-lens { opacity: 0; }
@@ -1039,9 +1041,10 @@ button { color: inherit; }
   .scene-status p { display: none; }
   .scene-status { width: auto; right: 9px; }
   .interaction-guide { font-size: .55rem; }
-  .node-label { min-width: 80px; max-width: 96px; }
-  .node-label strong { font-size: 9.5px; }
-  .space-node.is-platform .node-label strong { font-size: 11px; }
+  .node-label { min-width: 88px; max-width: 110px; padding-inline: 6px; }
+  .space-node.is-child .node-label { max-width: 110px; }
+  .node-label strong { font-size: 10px; }
+  .space-node.is-platform .node-label strong { font-size: 11.5px; }
   .inspector-tabs { grid-template-columns: 1fr 1.45fr; }
   .inspector-tab { padding-inline: 7px; font-size: .64rem; }
 }

@@ -63,7 +63,7 @@ const nodes = [
   },
   {
     id: "redTeam", label: "AI Red Teaming", meta: "stress test", cluster: "lifecycle", glyph: "RTM",
-    pos: [-305, 185, 60], mobilePos: [-340, 170, 60], size: 56, asset: `${A}redteam-authentication.svg`, important: true,
+    pos: [-390, 185, 60], mobilePos: [-360, 120, 60], size: 56, asset: `${A}redteam-authentication.svg`, important: true,
     eyebrow: "Adversarial validation",
     summary: "Automated scans test applications, models, and agents against real-world attack techniques.",
     role: "Turn discovered AI endpoints into targets, run attacks, and feed findings back into protection decisions.",
@@ -73,7 +73,7 @@ const nodes = [
   {
     id: "supplyChain", label: "AI Supply Chain Security", meta: "validate artifacts", cluster: "model", glyph: "SC",
     clusterLabel: "SUPPLY CHAIN · VALIDATE ARTIFACTS",
-    pos: [-60, 175, -90], mobilePos: [-90, 200, -90], size: 56, asset: `${A}model-manufacturing.svg`, important: true,
+    pos: [-60, 175, -90], mobilePos: [-70, 300, -90], size: 56, asset: `${A}model-manufacturing.svg`, important: true,
     eyebrow: "Pre-production artifact assurance",
     summary: "A unified supply-chain capability that evaluates AI models and agent skills before they reach production.",
     role: "Scan and gate model files and skill packages, then use their verdicts as evidence in the release process.",
@@ -83,7 +83,7 @@ const nodes = [
   {
     id: "modelSecurity", label: "Model Security", meta: "scan model artifacts", cluster: "model", glyph: "MS",
     childOf: "supplyChain", hideOutsideViews: true,
-    pos: [-180, 280, -125], mobilePos: [-400, 390, -120], size: 50, asset: `${A}model-inspection.svg`,
+    pos: [-190, 230, -125], mobilePos: [-330, 470, -120], size: 50, asset: `${A}model-inspection.svg`,
     eyebrow: "Supply-chain child capability",
     summary: "Scans AI model artifacts from supported sources so malicious content, unsafe files, vulnerabilities, and policy violations can be found before deployment.",
     role: "Inspect a model artifact against the Security Group attached to its Model Source, then return findings and a release decision before promotion.",
@@ -98,7 +98,7 @@ const nodes = [
   {
     id: "skillSecurity", label: "AI Skill Security", meta: "scan skills · preview", cluster: "model", glyph: "SS",
     childOf: "supplyChain", hideOutsideViews: true,
-    pos: [85, 285, -70], mobilePos: [210, 390, -70], size: 50, asset: `${A}model-visibility.svg`,
+    pos: [100, 235, -70], mobilePos: [190, 470, -70], size: 50, asset: `${A}model-visibility.svg`,
     eyebrow: "Supply-chain child capability · Preview",
     summary: "Statically analyzes packaged AI skills and produces an Allowed or Blocked verdict before those skills are trusted in an enterprise agent workflow.",
     role: "Upload a ZIP package, inspect SKILL.md and referenced files, evaluate security and governance rules, and use the verdict as an approval gate.",
@@ -114,7 +114,7 @@ const nodes = [
   {
     id: "agentIdentity", label: "AI Agent Identity", meta: "govern agents + MCP", cluster: "agent", glyph: "ID",
     clusterLabel: "AGENT IDENTITY · GOVERN",
-    pos: [310, 175, 45], mobilePos: [320, 190, 45], size: 52, asset: `${A}gateway-identity.svg`, important: true,
+    pos: [350, 175, 45], mobilePos: [360, 150, 45], size: 52, asset: `${A}gateway-identity.svg`, important: true,
     eyebrow: "Zero-trust agent governance",
     summary: "Secures AI agents and MCP-based workflows through centralized identity, posture, access, and runtime governance.",
     role: "Unify SaaS agent visibility and posture with centralized MCP security so agent access, tools, and behavior can be governed consistently.",
@@ -124,7 +124,7 @@ const nodes = [
   {
     id: "saasAgentSecurity", label: "SaaS Agent Security", meta: "discover + govern", cluster: "agent", glyph: "SAS",
     childOf: "agentIdentity", hideOutsideViews: true,
-    pos: [250, 275, 5], mobilePos: [85, 595, 5], size: 49, asset: `${A}runtime-visibility.svg`,
+    pos: [250, 225, 5], mobilePos: [70, 650, 5], size: 49, asset: `${A}runtime-visibility.svg`,
     eyebrow: "Agent Identity child capability",
     summary: "Discovers AI agents on supported SaaS platforms, assesses their configuration and access posture, and drives governance and remediation workflows.",
     role: "Onboard an agent platform, inventory its agents and connected resources, assess posture and runtime risk, and act on prioritized recommendations.",
@@ -139,7 +139,7 @@ const nodes = [
   {
     id: "mcpSecurity", label: "MCP Security", meta: "secure MCP tools", cluster: "agent", glyph: "MCP",
     childOf: "agentIdentity", hideOutsideViews: true,
-    pos: [465, 245, 20], mobilePos: [420, 600, 20], size: 49, asset: `${A}gateway-controls.svg`,
+    pos: [500, 205, 20], mobilePos: [360, 650, 20], size: 49, asset: `${A}gateway-controls.svg`,
     eyebrow: "Agent Identity child capability",
     summary: "Uses the centralized Prisma AIRS MCP Server to expose security tools to MCP clients with authenticated, profile-aware policy and logging.",
     role: "Authenticate an MCP client to the regional Prisma AIRS endpoint, attach an AI Security Profile, invoke the required protection tools, and review MCP scan logs.",
@@ -160,10 +160,10 @@ const edges = [
   { id: "airs-redteam", from: "airs", to: "redTeam", type: "capability", label: "assessment pillar", width: 8, bend: 7 },
   { id: "airs-supply", from: "airs", to: "supplyChain", type: "capability", label: "supply chain pillar", width: 9, bend: -7 },
   { id: "airs-agent-identity", from: "airs", to: "agentIdentity", type: "capability", label: "identity pillar", width: 9, bend: 7 },
-  { id: "supply-model", from: "supplyChain", to: "modelSecurity", type: "capability", label: "model security branch", width: 5, bend: -12, labelT: .54 },
-  { id: "supply-skill", from: "supplyChain", to: "skillSecurity", type: "capability", label: "skill security branch", width: 5, bend: 12, labelT: .54 },
-  { id: "identity-saas", from: "agentIdentity", to: "saasAgentSecurity", type: "capability", label: "SaaS agent branch", width: 5, bend: -12, labelT: .54 },
-  { id: "identity-mcp", from: "agentIdentity", to: "mcpSecurity", type: "capability", label: "MCP security branch", width: 5, bend: 12, labelT: .54 },
+  { id: "supply-model", from: "supplyChain", to: "modelSecurity", type: "capability", label: "model security branch", width: 5, bend: -12, labelT: .54, labelOnFocusOnly: true },
+  { id: "supply-skill", from: "supplyChain", to: "skillSecurity", type: "capability", label: "skill security branch", width: 5, bend: 12, labelT: .54, labelOnFocusOnly: true },
+  { id: "identity-saas", from: "agentIdentity", to: "saasAgentSecurity", type: "capability", label: "SaaS agent branch", width: 5, bend: -12, labelT: .54, labelOnFocusOnly: true },
+  { id: "identity-mcp", from: "agentIdentity", to: "mcpSecurity", type: "capability", label: "MCP security branch", width: 5, bend: 12, labelT: .54, labelOnFocusOnly: true },
   { id: "gateway-runtime", from: "gateway", via: "airs", to: "runtime", type: "data", label: "policy-enforced traffic", width: 14, lane: -1.2, labelT: .24 },
   { id: "endpoint-runtime", from: "endpointSecurity", via: "airs", to: "runtime", type: "data", label: "agent traffic", width: 12, lane: 1.2, labelT: .22 },
   { id: "redteam-runtime", from: "redTeam", via: "airs", to: "runtime", type: "lifecycle", label: "findings harden policy", width: 11, lane: -1.1, labelT: .24 },
@@ -607,6 +607,11 @@ function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
 
+function resetStageScroll() {
+  if (stage.scrollLeft !== 0) stage.scrollLeft = 0;
+  if (stage.scrollTop !== 0) stage.scrollTop = 0;
+}
+
 function savedTheme() {
   try {
     const value = localStorage.getItem(THEME_STORAGE_KEY);
@@ -874,7 +879,7 @@ function applyVisualState() {
     group.classList.toggle("is-muted", Boolean(focusId) && !isFocus);
     group.classList.toggle("is-view-hidden", isViewHidden);
     labelGroup.classList.toggle("is-focus", isFocus);
-    labelGroup.classList.toggle("is-lens", isLens);
+    labelGroup.classList.toggle("is-lens", isLens && !edge.labelOnFocusOnly);
     labelGroup.classList.toggle("is-view-hidden", isViewHidden);
   });
 
@@ -1106,6 +1111,7 @@ function updateInspector(node, openEdgeId = null) {
 }
 
 function selectNode(nodeId) {
+  resetStageScroll();
   state.selected = nodeId;
   state.lastInteraction = performance.now();
   updateInspector(byId.get(nodeId));
@@ -1119,6 +1125,7 @@ function clearSelection() {
   state.selected = null;
   inspector.classList.remove("is-open");
   inspector.setAttribute("aria-hidden", "true");
+  resetStageScroll();
   applyVisualState();
 }
 
@@ -1127,6 +1134,7 @@ function setView(viewId) {
   state.hovered = null;
   state.keyboardFocus = null;
   clearSelection();
+  resetStageScroll();
   document.querySelectorAll(".view-tab").forEach((button) => {
     const active = button.dataset.view === viewId;
     button.classList.toggle("is-active", active);
@@ -1148,7 +1156,7 @@ function resize() {
   linkLayer.setAttribute("width", viewport.width);
   linkLayer.setAttribute("height", viewport.height);
 
-  const iconScale = viewport.width <= 360
+  const responsiveIconScale = viewport.width <= 360
     ? .62
     : viewport.width <= 520
       ? .68
@@ -1159,6 +1167,7 @@ function resize() {
           : viewport.width <= 1440 || viewport.height <= 850
             ? .9
             : 1;
+  const iconScale = responsiveIconScale * .82;
 
   nodes.forEach((node) => {
     const element = nodeElements.get(node.id);
@@ -1397,6 +1406,8 @@ stage.addEventListener("wheel", (event) => {
   updateCameraReadout();
 }, { passive: false });
 
+stage.addEventListener("scroll", resetStageScroll, { passive: true });
+
 document.querySelectorAll(".view-tab").forEach((button) => {
   button.addEventListener("click", () => setView(button.dataset.view));
 });
@@ -1426,6 +1437,7 @@ applyTheme(root.dataset.theme || (systemTheme.matches ? "dark" : "light"));
 createEdges();
 createNodes();
 resize();
+resetStageScroll();
 updateCameraReadout();
 applyVisualState();
 requestAnimationFrame(frame);

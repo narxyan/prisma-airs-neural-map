@@ -22,6 +22,7 @@ for (const file of [htmlPath, appPath, cssPath, path.join(repositoryRoot, ".open
 if (!failures.length) {
   const html = readFileSync(htmlPath, "utf8");
   const app = readFileSync(appPath, "utf8");
+  const css = readFileSync(cssPath, "utf8");
   const dataStart = app.indexOf("const COLORS");
   const dataEnd = app.indexOf("const byId");
 
@@ -78,6 +79,7 @@ if (!failures.length) {
     for (const [edgeId, [from, to]] of Object.entries(childEdges)) {
       const edge = edges.find(({ id }) => id === edgeId);
       check(edge?.from === from && edge?.to === to, `Child edge ${edgeId} must connect ${from} to ${to}`);
+      check(edge?.labelOnFocusOnly === true, `Child edge ${edgeId} must keep its redundant label contextual`);
     }
 
     for (const node of nodes) {
@@ -119,6 +121,9 @@ if (!failures.length) {
   const cssVersion = html.match(/styles\.css\?v=(\d+)/)?.[1];
   const jsVersion = html.match(/app\.js\?v=(\d+)/)?.[1];
   check(cssVersion === jsVersion, "CSS and JavaScript cache-busting versions must match");
+  check(/\.space-stage\s*\{[\s\S]*?overflow:\s*clip;/.test(css), "The graph stage must not become a scroll container");
+  check(/responsiveIconScale\s*\*\s*\.82/.test(app), "The compact node-icon scale must remain enabled");
+  check(/stage\.addEventListener\("scroll",\s*resetStageScroll/.test(app), "The graph stage must reset unexpected focus scrolling");
 }
 
 if (failures.length) {
