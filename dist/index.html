@@ -32,7 +32,7 @@
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=13" />
+    <link rel="stylesheet" href="./styles.css?v=14" />
   </head>
   <body>
     <canvas id="starfield" aria-hidden="true"></canvas>
@@ -105,7 +105,7 @@
         <span id="viewCode">VIEW 01</span>
         <div>
           <strong id="viewTitle">Focused Prisma AIRS platform</strong>
-          <p id="viewDescription">Five official AIRS pillars around one platform core, with child capabilities grouped under their parent pillar.</p>
+          <p id="viewDescription">Five official AIRS pillars around one platform core, with four independently inspectable child capabilities.</p>
         </div>
       </div>
 
@@ -126,27 +126,43 @@
         <h2 id="detailTitle"></h2>
         <p id="detailSummary" class="detail-summary"></p>
 
-        <div class="detail-block">
-          <h3>Function in the flow</h3>
-          <p id="detailRole"></p>
+        <div class="inspector-tabs" role="tablist" aria-label="Capability detail sections">
+          <button id="overviewTab" class="inspector-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="overviewPanel" data-inspector-tab="overview">Overview</button>
+          <button id="documentationTab" class="inspector-tab" type="button" role="tab" aria-selected="false" aria-controls="documentationPanel" data-inspector-tab="documentation">Official documentation</button>
         </div>
 
-        <div class="detail-block">
-          <h3>Control surface</h3>
-          <ul id="detailFacts"></ul>
+        <div id="overviewPanel" class="inspector-panel is-active" role="tabpanel" aria-labelledby="overviewTab">
+          <div class="detail-block">
+            <h3>Function in the flow</h3>
+            <p id="detailRole"></p>
+          </div>
+
+          <div class="detail-block">
+            <h3>Control surface</h3>
+            <ul id="detailFacts"></ul>
+          </div>
+
+          <div id="prerequisitesBlock" class="detail-block">
+            <h3>Prerequisites</h3>
+            <ul id="detailPrerequisites"></ul>
+          </div>
+
+          <div class="detail-block">
+            <div class="detail-heading-row"><h3>Integration paths</h3><span id="connectionCount">00</span></div>
+            <div id="connectionList" class="connection-list"></div>
+          </div>
         </div>
 
-        <div class="detail-block">
-          <div class="detail-heading-row"><h3>Integration paths</h3><span id="connectionCount">00</span></div>
-          <div id="connectionList" class="connection-list"></div>
+        <div id="documentationPanel" class="inspector-panel documentation-panel" role="tabpanel" aria-labelledby="documentationTab" hidden>
+          <div class="documentation-intro">
+            <span>PALO ALTO NETWORKS · OFFICIAL SOURCES</span>
+            <p>Open the product documentation that supports this node's function, prerequisites, controls, and implementation path.</p>
+          </div>
+          <div id="documentationList" class="documentation-list"></div>
         </div>
-
-        <a id="sourceLink" class="source-link" href="#" target="_blank" rel="noreferrer">
-          Open official documentation <span aria-hidden="true">↗</span>
-        </a>
       </aside>
     </main>
 
-    <script src="./app.js?v=13" defer></script>
+    <script src="./app.js?v=14" defer></script>
   </body>
 </html>

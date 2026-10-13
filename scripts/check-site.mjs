@@ -39,6 +39,18 @@ if (!failures.length) {
     const nodeIds = new Set(nodes.map(({ id }) => id));
     const edgeIds = new Set(edges.map(({ id }) => id));
     const officialPillars = ["gateway", "runtime", "agentIdentity", "supplyChain", "redTeam"];
+    const childNodes = {
+      modelSecurity: "supplyChain",
+      skillSecurity: "supplyChain",
+      saasAgentSecurity: "agentIdentity",
+      mcpSecurity: "agentIdentity",
+    };
+    const childEdges = {
+      "supply-model": ["supplyChain", "modelSecurity"],
+      "supply-skill": ["supplyChain", "skillSecurity"],
+      "identity-saas": ["agentIdentity", "saasAgentSecurity"],
+      "identity-mcp": ["agentIdentity", "mcpSecurity"],
+    };
 
     check(nodeIds.size === nodes.length, "Node IDs must be unique");
     check(edgeIds.size === edges.length, "Edge IDs must be unique");
@@ -47,6 +59,26 @@ if (!failures.length) {
       officialPillars.every((id) => views.platform.nodes.includes(id)) && views.platform.nodes.includes("airs"),
       "The Platform view must include Prisma AIRS and all five official pillars",
     );
+    check(
+      Object.keys(childNodes).every((id) => views.platform.nodes.includes(id)),
+      "The Platform view must include every independently inspectable child node",
+    );
+
+    for (const [childId, parentId] of Object.entries(childNodes)) {
+      const child = nodes.find(({ id }) => id === childId);
+      check(Boolean(child), `Missing child node ${childId}`);
+      check(child?.childOf === parentId, `Child node ${childId} must declare ${parentId} as its parent`);
+      check(Array.isArray(child?.prerequisites) && child.prerequisites.length > 0, `Child node ${childId} needs prerequisites`);
+      check(Array.isArray(child?.docs) && child.docs.length > 0, `Child node ${childId} needs dedicated official documentation`);
+      for (const document of child?.docs ?? []) {
+        check(/^https:\/\/docs\.paloaltonetworks\.com\//.test(document.url), `Child node ${childId} has a non-official documentation URL`);
+      }
+    }
+
+    for (const [edgeId, [from, to]] of Object.entries(childEdges)) {
+      const edge = edges.find(({ id }) => id === edgeId);
+      check(edge?.from === from && edge?.to === to, `Child edge ${edgeId} must connect ${from} to ${to}`);
+    }
 
     for (const node of nodes) {
       const asset = path.resolve(distRoot, node.asset.replace(/^\.\//, ""));
@@ -95,4 +127,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("Site checks passed: five AIRS pillars, graph integrity, assets, sources, and HTML metadata verified.");
+console.log("Site checks passed: five AIRS pillars, four interactive child nodes, graph integrity, official docs, assets, and metadata verified.");

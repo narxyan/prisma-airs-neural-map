@@ -73,30 +73,83 @@ const nodes = [
   {
     id: "supplyChain", label: "AI Supply Chain Security", meta: "validate artifacts", cluster: "model", glyph: "SC",
     clusterLabel: "SUPPLY CHAIN · VALIDATE ARTIFACTS",
-    pos: [0, 205, -90], mobilePos: [-60, 250, -90], size: 56, asset: `${A}model-manufacturing.svg`, important: true,
+    pos: [-60, 175, -90], mobilePos: [-90, 200, -90], size: 56, asset: `${A}model-manufacturing.svg`, important: true,
     eyebrow: "Pre-production artifact assurance",
     summary: "A unified supply-chain capability that evaluates AI models and agent skills before they reach production.",
     role: "Scan and gate model files and skill packages, then use their verdicts as evidence in the release process.",
     facts: ["Model Security for model artifacts", "AI Skill Security for skill packages (Preview)", "Centralized verdicts and audit evidence"],
-    subcaps: [
-      { label: "Model Security", meta: "scan models", asset: `${A}model-inspection.svg` },
-      { label: "Skill Security", meta: "scan skills · preview", asset: `${A}model-visibility.svg` },
-    ],
     source: "https://docs.paloaltonetworks.com/prisma-airs/ai-supply-chain-security/ai-supply-chain-security",
+  },
+  {
+    id: "modelSecurity", label: "Model Security", meta: "scan model artifacts", cluster: "model", glyph: "MS",
+    childOf: "supplyChain", hideOutsideViews: true,
+    pos: [-180, 280, -125], mobilePos: [-400, 390, -120], size: 50, asset: `${A}model-inspection.svg`,
+    eyebrow: "Supply-chain child capability",
+    summary: "Scans AI model artifacts from supported sources so malicious content, unsafe files, vulnerabilities, and policy violations can be found before deployment.",
+    role: "Inspect a model artifact against the Security Group attached to its Model Source, then return findings and a release decision before promotion.",
+    facts: ["Model Sources define artifact origin and metadata", "Security Groups establish model scan controls", "Scan findings support pre-deployment release gates"],
+    prerequisites: ["Prisma AIRS Model Security license", "Strata Cloud Manager access and a supported Model Source or local scan workflow", "A Security Group associated with the selected Model Source"],
+    docs: [
+      { label: "AI Model Security", type: "Capability overview", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-supply-chain-security/ai-supply-chain-security/model-security-to-secure-your-ai-models" },
+      { label: "Default Security Groups and Rules", type: "Control configuration", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-supply-chain-security/ai-supply-chain-security/model-security-to-secure-your-ai-models/get-started-with-ai-model-security/default-security-groups-and-rules" },
+    ],
+    source: "https://docs.paloaltonetworks.com/prisma-airs/ai-supply-chain-security/ai-supply-chain-security/model-security-to-secure-your-ai-models",
+  },
+  {
+    id: "skillSecurity", label: "AI Skill Security", meta: "scan skills · preview", cluster: "model", glyph: "SS",
+    childOf: "supplyChain", hideOutsideViews: true,
+    pos: [85, 285, -70], mobilePos: [210, 390, -70], size: 50, asset: `${A}model-visibility.svg`,
+    eyebrow: "Supply-chain child capability · Preview",
+    summary: "Statically analyzes packaged AI skills and produces an Allowed or Blocked verdict before those skills are trusted in an enterprise agent workflow.",
+    role: "Upload a ZIP package, inspect SKILL.md and referenced files, evaluate security and governance rules, and use the verdict as an approval gate.",
+    facts: ["Analyzes SKILL.md plus referenced files", "Checks prompt integrity, code execution, secrets, and exfiltration risk", "Returns rule outcomes, findings, file locations, and a verdict"],
+    prerequisites: ["Prisma AIRS AI Skill Security deployment profile", "A ZIP package containing a valid SKILL.md", "Configured AI Skill Security rules; no license is required during Preview"],
+    docs: [
+      { label: "AI Skill Security (Preview)", type: "Capability overview", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-supply-chain-security/ai-supply-chain-security/ai-skill-security" },
+      { label: "Prepare a Skill Package", type: "Packaging requirements", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-supply-chain-security/ai-supply-chain-security/ai-skill-security/prepare-a-skill-package" },
+      { label: "AI Skill Security Rules", type: "Control reference", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-supply-chain-security/ai-supply-chain-security/ai-skill-security/ai-skill-security-rules" },
+    ],
+    source: "https://docs.paloaltonetworks.com/prisma-airs/ai-supply-chain-security/ai-supply-chain-security/ai-skill-security",
   },
   {
     id: "agentIdentity", label: "AI Agent Identity", meta: "govern agents + MCP", cluster: "agent", glyph: "ID",
     clusterLabel: "AGENT IDENTITY · GOVERN",
-    pos: [300, 255, 45], mobilePos: [260, 450, 45], size: 52, asset: `${A}gateway-identity.svg`, important: true,
+    pos: [310, 175, 45], mobilePos: [320, 190, 45], size: 52, asset: `${A}gateway-identity.svg`, important: true,
     eyebrow: "Zero-trust agent governance",
     summary: "Secures AI agents and MCP-based workflows through centralized identity, posture, access, and runtime governance.",
     role: "Unify SaaS agent visibility and posture with centralized MCP security so agent access, tools, and behavior can be governed consistently.",
     facts: ["SaaS Agent Security for discovery and posture", "Centralized Prisma AIRS MCP Server security", "Identity-aware governance for agents and tools"],
-    subcaps: [
-      { label: "SaaS Agent Security", meta: "discover + govern", asset: `${A}runtime-visibility.svg` },
-      { label: "MCP Security", meta: "secure tools", asset: `${A}gateway-controls.svg` },
-    ],
     source: "https://docs.paloaltonetworks.com/prisma-airs/ai-agent-identity",
+  },
+  {
+    id: "saasAgentSecurity", label: "SaaS Agent Security", meta: "discover + govern", cluster: "agent", glyph: "SAS",
+    childOf: "agentIdentity", hideOutsideViews: true,
+    pos: [250, 275, 5], mobilePos: [85, 595, 5], size: 49, asset: `${A}runtime-visibility.svg`,
+    eyebrow: "Agent Identity child capability",
+    summary: "Discovers AI agents on supported SaaS platforms, assesses their configuration and access posture, and drives governance and remediation workflows.",
+    role: "Onboard an agent platform, inventory its agents and connected resources, assess posture and runtime risk, and act on prioritized recommendations.",
+    facts: ["Agent, permission, tool, and data-access visibility", "Continuous posture and risk assessment", "Recommendations and supported automated enforcement workflows"],
+    prerequisites: ["A SaaS Agent Security entitlement through Prisma AIRS, CASB-X, CASB-PA, or SaaS Security Posture Management", "Strata Cloud Manager access", "Administrator access to a supported AI agent platform"],
+    docs: [
+      { label: "SaaS Agent Security Overview", type: "Capability overview", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-agent-identity/saas-agent-security-overview" },
+      { label: "Onboard SaaS Agents", type: "Implementation guide", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-agent-identity/saas-agent-security-overview/onboard-saas-agents" },
+    ],
+    source: "https://docs.paloaltonetworks.com/prisma-airs/ai-agent-identity/saas-agent-security-overview",
+  },
+  {
+    id: "mcpSecurity", label: "MCP Security", meta: "secure MCP tools", cluster: "agent", glyph: "MCP",
+    childOf: "agentIdentity", hideOutsideViews: true,
+    pos: [465, 245, 20], mobilePos: [420, 600, 20], size: 49, asset: `${A}gateway-controls.svg`,
+    eyebrow: "Agent Identity child capability",
+    summary: "Uses the centralized Prisma AIRS MCP Server to expose security tools to MCP clients with authenticated, profile-aware policy and logging.",
+    role: "Authenticate an MCP client to the regional Prisma AIRS endpoint, attach an AI Security Profile, invoke the required protection tools, and review MCP scan logs.",
+    facts: ["API key or OAuth 2.0 authentication", "Streamable HTTP and SSE MCP transports", "Security-profile linking and MCP-specific scan logs"],
+    prerequisites: ["Prisma AIRS AI Runtime API Intercept deployment profile and application", "API key or OAuth 2.0 token", "An AI Security Profile and an MCP client that supports Streamable HTTP or SSE"],
+    docs: [
+      { label: "Prisma AIRS MCP Server", type: "Capability overview", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-agent-identity/prisma-airs-mcp-server-for-centralized-ai-agent-security" },
+      { label: "Configure MCP Server Security", type: "Implementation guide", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-agent-identity/understanding-the-prisma-airs-mcp-server/configure-mcp-server-security-using-prisma-airs" },
+    ],
+    source: "https://docs.paloaltonetworks.com/prisma-airs/ai-agent-identity/prisma-airs-mcp-server-for-centralized-ai-agent-security",
   },
 ];
 
@@ -107,6 +160,10 @@ const edges = [
   { id: "airs-redteam", from: "airs", to: "redTeam", type: "capability", label: "assessment pillar", width: 8, bend: 7 },
   { id: "airs-supply", from: "airs", to: "supplyChain", type: "capability", label: "supply chain pillar", width: 9, bend: -7 },
   { id: "airs-agent-identity", from: "airs", to: "agentIdentity", type: "capability", label: "identity pillar", width: 9, bend: 7 },
+  { id: "supply-model", from: "supplyChain", to: "modelSecurity", type: "capability", label: "model security branch", width: 5, bend: -12, labelT: .54 },
+  { id: "supply-skill", from: "supplyChain", to: "skillSecurity", type: "capability", label: "skill security branch", width: 5, bend: 12, labelT: .54 },
+  { id: "identity-saas", from: "agentIdentity", to: "saasAgentSecurity", type: "capability", label: "SaaS agent branch", width: 5, bend: -12, labelT: .54 },
+  { id: "identity-mcp", from: "agentIdentity", to: "mcpSecurity", type: "capability", label: "MCP security branch", width: 5, bend: 12, labelT: .54 },
   { id: "gateway-runtime", from: "gateway", via: "airs", to: "runtime", type: "data", label: "policy-enforced traffic", width: 14, lane: -1.2, labelT: .24 },
   { id: "endpoint-runtime", from: "endpointSecurity", via: "airs", to: "runtime", type: "data", label: "agent traffic", width: 12, lane: 1.2, labelT: .22 },
   { id: "redteam-runtime", from: "redTeam", via: "airs", to: "runtime", type: "lifecycle", label: "findings harden policy", width: 11, lane: -1.1, labelT: .24 },
@@ -263,6 +320,110 @@ print(verdict)`,
       { label: "Prisma AIRS MCP Server", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-agent-identity/prisma-airs-mcp-server-for-centralized-ai-agent-security" },
     ],
   },
+  "supply-model": {
+    evidence: "PUBLIC · NATIVE SCAN",
+    mode: "Model artifact scanning",
+    summary: "Model Security is a dedicated child capability of AI Supply Chain Security. It evaluates model artifacts against the Security Group permanently associated with their Model Source and surfaces findings before release.",
+    prerequisites: [
+      "Prisma AIRS Model Security license",
+      "A supported Model Source or local model-scanning workflow",
+      "A Security Group configured for that Model Source",
+    ],
+    steps: [
+      "Select or configure the Model Source that owns the artifact and its metadata.",
+      "Use the source's default Security Group or create a custom group with the required rules.",
+      "Submit or discover the model artifact, review the scan findings, and use the result as a promotion gate.",
+    ],
+    note: "Hierarchy edge — Model Security is operated as its own control surface, while AI Supply Chain Security is the parent capability that organizes pre-production artifact assurance.",
+    sources: [
+      { label: "AI Model Security", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-supply-chain-security/ai-supply-chain-security/model-security-to-secure-your-ai-models" },
+      { label: "Default Security Groups and Rules", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-supply-chain-security/ai-supply-chain-security/model-security-to-secure-your-ai-models/get-started-with-ai-model-security/default-security-groups-and-rules" },
+    ],
+  },
+  "supply-skill": {
+    evidence: "PUBLIC · ZIP UPLOAD",
+    mode: "Static skill-package scan",
+    summary: "AI Skill Security is a dedicated Preview child capability. It analyzes SKILL.md and the files referenced by a packaged skill, evaluates built-in security and governance rules, and returns an Allowed or Blocked verdict.",
+    prerequisites: [
+      "Prisma AIRS AI Skill Security deployment profile",
+      "A ZIP archive containing a valid SKILL.md and any supporting files",
+      "The built-in rules configured for the organization's approval policy",
+    ],
+    steps: [
+      "Package one skill with SKILL.md at the archive root, or package up to 100 sibling skill directories in a batch archive.",
+      "Upload the ZIP package and allow Prisma AIRS to analyze its contents and referenced files.",
+      "Review rule outcomes, file-level findings, and the final Allowed or Blocked verdict before trusting the skill.",
+    ],
+    code: {
+      language: "Shell",
+      label: "Documented skill ZIP pattern",
+      value: `zip -r my-skill.zip . \\
+  -x ".git/*" "__pycache__/*" "*.pyc" \\
+     ".venv/*" "venv/*" "node_modules/*"`,
+    },
+    note: "Preview capability — Palo Alto Networks currently documents no license requirement for Preview, but a Prisma AIRS AI Skill Security deployment profile is required.",
+    sources: [
+      { label: "AI Skill Security (Preview)", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-supply-chain-security/ai-supply-chain-security/ai-skill-security" },
+      { label: "Prepare a Skill Package", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-supply-chain-security/ai-supply-chain-security/ai-skill-security/prepare-a-skill-package" },
+      { label: "AI Skill Security Rules", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-supply-chain-security/ai-supply-chain-security/ai-skill-security/ai-skill-security-rules" },
+    ],
+  },
+  "identity-saas": {
+    evidence: "PUBLIC · ONBOARDING",
+    mode: "SaaS agent discovery and posture",
+    summary: "SaaS Agent Security is a dedicated AI Agent Identity child capability. It onboards supported agent platforms, discovers agents and their access, evaluates posture, and provides recommendations and enforcement workflows.",
+    prerequisites: [
+      "A SaaS Agent Security entitlement through Prisma AIRS or an included SaaS security license",
+      "Strata Cloud Manager access",
+      "Administrator credentials for a supported AI agent platform",
+    ],
+    steps: [
+      "Activate the entitlement or Prisma AIRS deployment profile for SaaS Agent Security.",
+      "Onboard the supported AI agent platform through the Cloud Account workflow.",
+      "Review agent inventory, permissions, tools, posture findings, and recommendations; apply supported remediation actions.",
+    ],
+    note: "Platform onboarding path — credentials and supported data vary by agent platform, so the official platform-specific guide remains the source of truth for each connector.",
+    sources: [
+      { label: "SaaS Agent Security Overview", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-agent-identity/saas-agent-security-overview" },
+      { label: "Onboard SaaS Agents", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-agent-identity/saas-agent-security-overview/onboard-saas-agents" },
+    ],
+  },
+  "identity-mcp": {
+    evidence: "PUBLIC · MCP CONFIG",
+    mode: "Centralized Prisma AIRS MCP Server",
+    summary: "MCP Security is a dedicated AI Agent Identity child capability. A compatible client connects to the regional Prisma AIRS MCP endpoint, authenticates with an API key or OAuth token, and invokes profile-aware security tools.",
+    prerequisites: [
+      "Prisma AIRS AI Runtime API Intercept deployment profile and application",
+      "API key or OAuth 2.0 token",
+      "AI Security Profile and an MCP client supporting Streamable HTTP or SSE",
+    ],
+    steps: [
+      "Generate an AIRS API key or OAuth 2.0 token and create the AI Security Profile used by the tools.",
+      "Configure the MCP client with the regional endpoint, transport, authentication header, and optional x-pan-profile header.",
+      "Ensure the agent invokes the required security tools and monitor PANW MCP Server entries in the AIRS scan logs.",
+    ],
+    code: {
+      language: "JSON",
+      label: "Official MCP client configuration pattern",
+      value: `{
+  "servers": {
+    "prisma-airs": {
+      "type": "http",
+      "url": "https://service.api.aisecurity.paloaltonetworks.com/mcp",
+      "headers": {
+        "x-pan-token": "your-api-key",
+        "x-pan-profile": "your-profile-optional"
+      }
+    }
+  }
+}`,
+    },
+    note: "The MCP server exposes security tools, but the agent or application remains responsible for invoking them at the correct points in its workflow.",
+    sources: [
+      { label: "Prisma AIRS MCP Server", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-agent-identity/prisma-airs-mcp-server-for-centralized-ai-agent-security" },
+      { label: "Configure MCP Server Security", url: "https://docs.paloaltonetworks.com/prisma-airs/ai-agent-identity/understanding-the-prisma-airs-mcp-server/configure-mcp-server-security-using-prisma-airs" },
+    ],
+  },
   "gateway-runtime": {
     evidence: "PUBLIC · NATIVE CONFIG",
     mode: "Partner guardrail",
@@ -380,25 +541,25 @@ const views = {
     code: "VIEW 01",
     title: "Focused Prisma AIRS platform",
     focus: "airs",
-    description: "Five official AIRS pillars around one platform core, with child capabilities grouped under their parent pillar.",
-    nodes: ["airs", "gateway", "runtime", "redTeam", "supplyChain", "agentIdentity"],
-    edges: ["airs-gateway", "airs-runtime", "airs-redteam", "airs-supply", "airs-agent-identity"],
+    description: "Five official AIRS pillars around one platform core, with four independently inspectable child capabilities.",
+    nodes: ["airs", "gateway", "runtime", "redTeam", "supplyChain", "modelSecurity", "skillSecurity", "agentIdentity", "saasAgentSecurity", "mcpSecurity"],
+    edges: ["airs-gateway", "airs-runtime", "airs-redteam", "airs-supply", "airs-agent-identity", "supply-model", "supply-skill", "identity-saas", "identity-mcp"],
   },
   runtime: {
     code: "VIEW 02",
     title: "Live AI traffic protection",
     focus: "runtime",
     description: "Trace governed AI, endpoint, identity, and MCP paths into the Runtime Security enforcement layer.",
-    nodes: ["airs", "gateway", "runtime", "endpointSecurity", "agentIdentity"],
-    edges: ["gateway-runtime", "endpoint-runtime", "agentidentity-runtime"],
+    nodes: ["airs", "gateway", "runtime", "endpointSecurity", "agentIdentity", "saasAgentSecurity", "mcpSecurity"],
+    edges: ["gateway-runtime", "endpoint-runtime", "agentidentity-runtime", "identity-saas", "identity-mcp"],
   },
   lifecycle: {
     code: "VIEW 03",
     title: "AI lifecycle assurance",
     focus: "redTeam",
     description: "Connect adversarial testing and supply-chain artifact assurance to production protection.",
-    nodes: ["airs", "redTeam", "supplyChain", "runtime"],
-    edges: ["redteam-runtime", "supply-runtime"],
+    nodes: ["airs", "redTeam", "supplyChain", "modelSecurity", "skillSecurity", "runtime"],
+    edges: ["redteam-runtime", "supply-runtime", "supply-model", "supply-skill"],
   },
 };
 
@@ -595,12 +756,13 @@ function createNodes() {
   nodes.forEach((node) => {
     const button = document.createElement("button");
     button.type = "button";
-    button.className = `space-node${node.id === "airs" ? " is-platform" : ""}${node.subcaps ? " is-compound" : ""}`;
+    button.className = `space-node${node.id === "airs" ? " is-platform" : ""}${node.childOf ? " is-child" : ""}`;
     button.dataset.node = node.id;
     button.style.setProperty("--node-color", colorForCluster(node.cluster));
     button.style.setProperty("--node-size", `${node.size}px`);
     button.style.setProperty("--node-render-size", `${node.size}px`);
-    button.setAttribute("aria-label", `${node.label}. ${node.summary}`);
+    const parentContext = node.childOf ? ` Child capability of ${byId.get(node.childOf).label}.` : "";
+    button.setAttribute("aria-label", `${node.label}.${parentContext} ${node.summary}`);
 
     const prism = document.createElement("span");
     prism.className = "node-prism";
@@ -625,28 +787,6 @@ function createNodes() {
     meta.textContent = node.status ? `${node.meta} · ${node.status}` : node.meta;
     label.append(title, meta);
     button.append(prism, label);
-
-    if (node.subcaps) {
-      const subcapRow = document.createElement("span");
-      subcapRow.className = "node-subcap-row";
-      node.subcaps.forEach((subcap) => {
-        const card = document.createElement("span");
-        card.className = "node-subcap";
-        const subcapIcon = document.createElement("img");
-        subcapIcon.src = subcap.asset;
-        subcapIcon.alt = "";
-        subcapIcon.draggable = false;
-        const copy = document.createElement("span");
-        const subcapTitle = document.createElement("strong");
-        subcapTitle.textContent = subcap.label;
-        const subcapMeta = document.createElement("small");
-        subcapMeta.textContent = subcap.meta;
-        copy.append(subcapTitle, subcapMeta);
-        card.append(subcapIcon, copy);
-        subcapRow.append(card);
-      });
-      button.append(subcapRow);
-    }
 
     button.addEventListener("pointerenter", () => {
       state.hovered = node.id;
@@ -712,7 +852,8 @@ function applyVisualState() {
     const node = byId.get(id);
     const isLensFocus = id === lensFocusId;
     const isLensRelated = Boolean(lensFocusId) && viewNodes.has(id) && id !== lensFocusId;
-    const isViewHidden = Boolean(!focusId && node.hideOutsideViews && !viewNodes.has(id));
+    const isRelevantToFocus = Boolean(focusId) && (id === focusId || relatedNodes.has(id));
+    const isViewHidden = Boolean(node.hideOutsideViews && !viewNodes.has(id) && !isRelevantToFocus);
     element.classList.toggle("is-focused", id === focusId || isLensFocus);
     element.classList.toggle("is-related", (Boolean(focusId) && relatedNodes.has(id)) || isLensRelated);
     element.classList.toggle("is-muted", Boolean(focusId) && id !== focusId && !relatedNodes.has(id));
@@ -727,13 +868,14 @@ function applyVisualState() {
       .some((nodeId) => byId.get(nodeId)?.hideOutsideViews && !viewNodes.has(nodeId));
     const isFocus = focusId ? focusEdges.has(id) : lensEdges.has(id);
     const isLens = !focusId && viewEdges.has(id);
+    const isViewHidden = hasHiddenEndpoint && !isFocus;
     group.classList.toggle("is-focus", isFocus);
     group.classList.toggle("is-lens", isLens);
     group.classList.toggle("is-muted", Boolean(focusId) && !isFocus);
-    group.classList.toggle("is-view-hidden", !focusId && hasHiddenEndpoint);
+    group.classList.toggle("is-view-hidden", isViewHidden);
     labelGroup.classList.toggle("is-focus", isFocus);
     labelGroup.classList.toggle("is-lens", isLens);
-    labelGroup.classList.toggle("is-view-hidden", !focusId && hasHiddenEndpoint);
+    labelGroup.classList.toggle("is-view-hidden", isViewHidden);
   });
 
   updateViewText(focusId);
@@ -872,6 +1014,59 @@ function createIntegrationAccordion(selectedNode, edge, connected, initiallyOpen
   return details;
 }
 
+function setInspectorTab(tabId) {
+  document.querySelectorAll(".inspector-tab").forEach((button) => {
+    const active = button.dataset.inspectorTab === tabId;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-selected", String(active));
+  });
+  document.querySelectorAll(".inspector-panel").forEach((panel) => {
+    const active = panel.id === `${tabId}Panel`;
+    panel.classList.toggle("is-active", active);
+    panel.hidden = !active;
+  });
+}
+
+function documentationFor(node) {
+  const candidates = [
+    ...(node.docs ?? [{ label: `${node.label} documentation`, type: "Primary capability page", url: node.source }]),
+  ];
+
+  connectionsFor(node.id).forEach(({ edge }) => {
+    integrationGuides[edge.id]?.sources?.forEach((source) => {
+      candidates.push({ ...source, type: `Integration path · ${edge.label}` });
+    });
+  });
+
+  const seen = new Set();
+  return candidates.filter((document) => {
+    if (seen.has(document.url)) return false;
+    seen.add(document.url);
+    return true;
+  });
+}
+
+function createDocumentationCard(sourceDoc) {
+  const link = document.createElement("a");
+  link.className = "documentation-card";
+  link.href = sourceDoc.url;
+  link.target = "_blank";
+  link.rel = "noreferrer";
+
+  const copy = document.createElement("span");
+  const title = document.createElement("strong");
+  title.textContent = sourceDoc.label;
+  const type = document.createElement("small");
+  type.textContent = sourceDoc.type ?? "Official technical documentation";
+  copy.append(title, type);
+
+  const arrow = document.createElement("i");
+  arrow.setAttribute("aria-hidden", "true");
+  arrow.textContent = "↗";
+  link.append(copy, arrow);
+  return link;
+}
+
 function updateInspector(node, openEdgeId = null) {
   inspector.style.setProperty("--detail-color", colorForCluster(node.cluster));
   const icon = document.querySelector("#detailIcon");
@@ -890,6 +1085,15 @@ function updateInspector(node, openEdgeId = null) {
   });
   document.querySelector("#detailFacts").replaceChildren(...facts);
 
+  const prerequisites = (node.prerequisites ?? []).map((prerequisite) => {
+    const item = document.createElement("li");
+    item.textContent = prerequisite;
+    return item;
+  });
+  const prerequisitesBlock = document.querySelector("#prerequisitesBlock");
+  prerequisitesBlock.hidden = prerequisites.length === 0;
+  document.querySelector("#detailPrerequisites").replaceChildren(...prerequisites);
+
   const connections = connectionsFor(node.id);
   document.querySelector("#connectionCount").textContent = String(connections.length).padStart(2, "0");
   const accordions = connections.map(({ edge, node: connected }) => {
@@ -897,15 +1101,15 @@ function updateInspector(node, openEdgeId = null) {
   });
   document.querySelector("#connectionList").replaceChildren(...accordions);
 
-  const source = document.querySelector("#sourceLink");
-  source.href = node.source;
-  source.setAttribute("aria-label", `Open official documentation for ${node.label}`);
+  const documentation = documentationFor(node).map(createDocumentationCard);
+  document.querySelector("#documentationList").replaceChildren(...documentation);
 }
 
 function selectNode(nodeId) {
   state.selected = nodeId;
   state.lastInteraction = performance.now();
   updateInspector(byId.get(nodeId));
+  setInspectorTab("overview");
   inspector.classList.add("is-open");
   inspector.setAttribute("aria-hidden", "false");
   applyVisualState();
@@ -1195,6 +1399,10 @@ stage.addEventListener("wheel", (event) => {
 
 document.querySelectorAll(".view-tab").forEach((button) => {
   button.addEventListener("click", () => setView(button.dataset.view));
+});
+
+document.querySelectorAll(".inspector-tab").forEach((button) => {
+  button.addEventListener("click", () => setInspectorTab(button.dataset.inspectorTab));
 });
 
 themeToggle?.addEventListener("click", () => {

@@ -10,7 +10,7 @@ An interactive, responsive 3D map of the five official Prisma AIRS capability pi
 - AI Gateway
 - AI Agent Identity
 
-AI Supply Chain Security expands into Model Security and AI Skill Security. AI Agent Identity expands into SaaS Agent Security and MCP Security. Cortex Agentic Endpoint Security is retained as a supporting Runtime Security integration rather than presented as a core AIRS pillar.
+AI Supply Chain Security connects to independently interactive Model Security and AI Skill Security nodes. AI Agent Identity connects to independently interactive SaaS Agent Security and MCP Security nodes. Each child node has its own function, controls, prerequisites, integration workflow, and official Palo Alto Networks documentation tab. Cortex Agentic Endpoint Security is retained as a supporting Runtime Security integration rather than presented as a core AIRS pillar.
 
 ## Run locally
 
@@ -28,7 +28,7 @@ Open <http://127.0.0.1:4173/>.
 npm run check
 ```
 
-The checks validate JavaScript syntax, the five-pillar Platform view, graph references, integration-guide coverage, local assets, HTTPS documentation sources, and essential HTML metadata. The same command runs in GitHub Actions for pushes to `main` and pull requests.
+The checks validate JavaScript syntax, the five-pillar Platform view, all four interactive child nodes and hierarchy edges, graph references, integration-guide coverage, official documentation sources, local assets, and essential HTML metadata. The same command runs in GitHub Actions for pushes to `main` and pull requests.
 
 ## Structure
 
