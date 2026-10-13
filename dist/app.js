@@ -26,7 +26,7 @@ const A = "./assets/official/";
 const nodes = [
   {
     id: "airs", label: "Prisma AIRS", meta: "platform core", cluster: "core", glyph: "AIRS",
-    pos: [0, 0, 105], mobilePos: [0, 0, 105], size: 78, asset: `${A}prisma-airs.svg`, important: true,
+    pos: [0, 0, 105], compactPos: [0, 0, 105], mobilePos: [0, 0, 105], size: 78, asset: `${A}prisma-airs.svg`, important: true,
     eyebrow: "Unified AI security platform",
     summary: "A unified platform for discovering, assessing, and protecting AI applications, models, agents, data, and infrastructure.",
     role: "Coordinate the five official AIRS capability pillars: Gateway, Runtime Security, Agent Identity, Supply Chain Security, and Red Teaming.",
@@ -35,7 +35,7 @@ const nodes = [
   },
   {
     id: "gateway", label: "AI Gateway", meta: "govern traffic", cluster: "gateway", glyph: "GW",
-    pos: [-310, -155, 35], mobilePos: [-300, -175, 35], size: 58, asset: `${A}gateway-governance.svg`, important: true,
+    pos: [-310, -155, 35], compactPos: [-300, -170, 35], mobilePos: [-300, -175, 35], size: 58, asset: `${A}gateway-governance.svg`, important: true,
     eyebrow: "AI control plane",
     summary: "A unified control and data plane for routing, governing, and observing AI requests.",
     role: "Place consistent access, routing, cost, and security controls in the path of AI traffic.",
@@ -44,7 +44,7 @@ const nodes = [
   },
   {
     id: "runtime", label: "AI Runtime Security", meta: "enforce", cluster: "runtime", glyph: "RT",
-    pos: [310, -135, 55], mobilePos: [300, -175, 55], size: 60, asset: `${A}runtime-prevention.svg`, important: true,
+    pos: [310, -135, 55], compactPos: [310, -150, 55], mobilePos: [300, -175, 55], size: 60, asset: `${A}runtime-prevention.svg`, important: true,
     eyebrow: "Real-time enforcement",
     summary: "Detects and blocks AI-specific threats as traffic moves through applications and agents.",
     role: "Apply the same security intelligence through code-level API interception, network interception, or both.",
@@ -53,7 +53,7 @@ const nodes = [
   },
   {
     id: "endpointSecurity", label: "Endpoint Security", meta: "secure agent endpoints", cluster: "endpoint", glyph: "AES",
-    pos: [385, 70, -30], mobilePos: [360, 15, -30], size: 54, asset: `${A}runtime-platform.svg`, important: true,
+    pos: [385, 70, -30], compactPos: [410, 20, -30], mobilePos: [360, 15, -30], size: 54, asset: `${A}runtime-platform.svg`, important: true,
     hideOutsideViews: true,
     eyebrow: "Agentic endpoint protection",
     summary: "Cortex Agentic Endpoint Security protects the developer endpoint where autonomous coding agents, extensions, and local AI artifacts operate.",
@@ -63,7 +63,7 @@ const nodes = [
   },
   {
     id: "redTeam", label: "AI Red Teaming", meta: "stress test", cluster: "lifecycle", glyph: "RTM",
-    pos: [-390, 185, 60], mobilePos: [-360, 120, 60], size: 56, asset: `${A}redteam-authentication.svg`, important: true,
+    pos: [-390, 185, 60], compactPos: [-430, 145, 60], mobilePos: [-360, 120, 60], size: 56, asset: `${A}redteam-authentication.svg`, important: true,
     eyebrow: "Adversarial validation",
     summary: "Automated scans test applications, models, and agents against real-world attack techniques.",
     role: "Turn discovered AI endpoints into targets, run attacks, and feed findings back into protection decisions.",
@@ -73,7 +73,7 @@ const nodes = [
   {
     id: "supplyChain", label: "AI Supply Chain Security", meta: "validate artifacts", cluster: "model", glyph: "SC",
     clusterLabel: "SUPPLY CHAIN · VALIDATE ARTIFACTS",
-    pos: [-60, 175, -90], mobilePos: [-70, 300, -90], size: 56, asset: `${A}model-manufacturing.svg`, important: true,
+    pos: [-60, 175, -90], compactPos: [-100, 155, -90], mobilePos: [-70, 300, -90], size: 56, asset: `${A}model-manufacturing.svg`, important: true,
     eyebrow: "Pre-production artifact assurance",
     summary: "A unified supply-chain capability that evaluates AI models and agent skills before they reach production.",
     role: "Scan and gate model files and skill packages, then use their verdicts as evidence in the release process.",
@@ -83,7 +83,7 @@ const nodes = [
   {
     id: "modelSecurity", label: "Model Security", meta: "scan model artifacts", cluster: "model", glyph: "MS",
     childOf: "supplyChain", hideOutsideViews: true,
-    pos: [-190, 230, -125], mobilePos: [-330, 470, -120], size: 50, asset: `${A}model-inspection.svg`,
+    pos: [-190, 230, -125], compactPos: [-420, 310, -120], mobilePos: [-330, 470, -120], size: 50, asset: `${A}model-inspection.svg`,
     eyebrow: "Supply-chain child capability",
     summary: "Scans AI model artifacts from supported sources so malicious content, unsafe files, vulnerabilities, and policy violations can be found before deployment.",
     role: "Inspect a model artifact against the Security Group attached to its Model Source, then return findings and a release decision before promotion.",
@@ -98,7 +98,7 @@ const nodes = [
   {
     id: "skillSecurity", label: "AI Skill Security", meta: "scan skills · preview", cluster: "model", glyph: "SS",
     childOf: "supplyChain", hideOutsideViews: true,
-    pos: [100, 235, -70], mobilePos: [190, 470, -70], size: 50, asset: `${A}model-visibility.svg`,
+    pos: [100, 235, -70], compactPos: [-80, 310, -70], mobilePos: [190, 470, -70], size: 50, asset: `${A}model-visibility.svg`,
     eyebrow: "Supply-chain child capability · Preview",
     summary: "Statically analyzes packaged AI skills and produces an Allowed or Blocked verdict before those skills are trusted in an enterprise agent workflow.",
     role: "Upload a ZIP package, inspect SKILL.md and referenced files, evaluate security and governance rules, and use the verdict as an approval gate.",
@@ -114,7 +114,7 @@ const nodes = [
   {
     id: "agentIdentity", label: "AI Agent Identity", meta: "govern agents + MCP", cluster: "agent", glyph: "ID",
     clusterLabel: "AGENT IDENTITY · GOVERN",
-    pos: [350, 175, 45], mobilePos: [360, 150, 45], size: 52, asset: `${A}gateway-identity.svg`, important: true,
+    pos: [350, 175, 45], compactPos: [360, 145, 45], mobilePos: [360, 150, 45], size: 52, asset: `${A}gateway-identity.svg`, important: true,
     eyebrow: "Zero-trust agent governance",
     summary: "Secures AI agents and MCP-based workflows through centralized identity, posture, access, and runtime governance.",
     role: "Unify SaaS agent visibility and posture with centralized MCP security so agent access, tools, and behavior can be governed consistently.",
@@ -124,7 +124,7 @@ const nodes = [
   {
     id: "saasAgentSecurity", label: "SaaS Agent Security", meta: "discover + govern", cluster: "agent", glyph: "SAS",
     childOf: "agentIdentity", hideOutsideViews: true,
-    pos: [250, 225, 5], mobilePos: [70, 650, 5], size: 49, asset: `${A}runtime-visibility.svg`,
+    pos: [250, 225, 5], compactPos: [250, 310, 5], mobilePos: [70, 650, 5], size: 49, asset: `${A}runtime-visibility.svg`,
     eyebrow: "Agent Identity child capability",
     summary: "Discovers AI agents on supported SaaS platforms, assesses their configuration and access posture, and drives governance and remediation workflows.",
     role: "Onboard an agent platform, inventory its agents and connected resources, assess posture and runtime risk, and act on prioritized recommendations.",
@@ -139,7 +139,7 @@ const nodes = [
   {
     id: "mcpSecurity", label: "MCP Security", meta: "secure MCP tools", cluster: "agent", glyph: "MCP",
     childOf: "agentIdentity", hideOutsideViews: true,
-    pos: [500, 205, 20], mobilePos: [360, 650, 20], size: 49, asset: `${A}gateway-controls.svg`,
+    pos: [500, 205, 20], compactPos: [430, 385, 20], mobilePos: [360, 650, 20], size: 49, asset: `${A}gateway-controls.svg`,
     eyebrow: "Agent Identity child capability",
     summary: "Uses the centralized Prisma AIRS MCP Server to expose security tools to MCP clients with authenticated, profile-aware policy and logging.",
     role: "Authenticate an MCP client to the regional Prisma AIRS endpoint, attach an AI Security Profile, invoke the required protection tools, and review MCP scan logs.",
@@ -1239,7 +1239,11 @@ function rotatePoint(position, time) {
 }
 
 function projectNode(node, time) {
-  const position = viewport.width <= 460 ? (node.mobilePos ?? node.pos) : node.pos;
+  const position = viewport.width <= 460
+    ? (node.mobilePos ?? node.compactPos ?? node.pos)
+    : viewport.width <= 760
+      ? (node.compactPos ?? node.pos)
+      : node.pos;
   const rotated = rotatePoint(position, time);
   const fit = clamp(Math.min(viewport.width / 1220, viewport.height / 790) * 1.04, .34, 1.16) * state.zoom;
   const centerShift = state.selected && viewport.width > 920 ? -115 : 0;

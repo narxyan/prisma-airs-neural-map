@@ -64,6 +64,10 @@ if (!failures.length) {
       Object.keys(childNodes).every((id) => views.platform.nodes.includes(id)),
       "The Platform view must include every independently inspectable child node",
     );
+    check(
+      views.platform.nodes.every((id) => Array.isArray(nodes.find((node) => node.id === id)?.compactPos)),
+      "Every Platform node must provide a compact-panel position",
+    );
 
     for (const [childId, parentId] of Object.entries(childNodes)) {
       const child = nodes.find(({ id }) => id === childId);
