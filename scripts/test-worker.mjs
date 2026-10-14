@@ -53,7 +53,6 @@ const { default: worker } = await import(pathToFileURL(path.join(projectRoot, "d
 const env = { DB };
 const authHeaders = {
   "content-type": "application/json",
-  "oai-authenticated-user-id": "production-check",
 };
 
 async function callTool(name, args = {}) {
