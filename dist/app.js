@@ -26,7 +26,7 @@ const A = "./assets/official/";
 const nodes = [
   {
     id: "airs", label: "Prisma AIRS", meta: "platform core", cluster: "core", glyph: "AIRS",
-    pos: [0, 0, 105], compactPos: [0, 0, 105], mobilePos: [0, 0, 105], size: 78, asset: `${A}prisma-airs.svg`, important: true,
+    pos: [0, 0, 105], compactPos: [0, 0, 105], mobilePos: [0, -330, 105], size: 78, asset: `${A}prisma-airs.svg`, important: true,
     eyebrow: "Unified AI security platform",
     summary: "A unified platform for discovering, assessing, and protecting AI applications, models, agents, data, and infrastructure.",
     role: "Coordinate the five official AIRS capability pillars: Gateway, Runtime Security, Agent Identity, Supply Chain Security, and Red Teaming.",
@@ -35,7 +35,7 @@ const nodes = [
   },
   {
     id: "gateway", label: "AI Gateway", meta: "govern traffic", cluster: "gateway", glyph: "GW",
-    pos: [-310, -155, 35], compactPos: [-300, -170, 35], mobilePos: [-300, -175, 35], size: 58, asset: `${A}gateway-governance.svg`, important: true,
+    pos: [-310, -155, 35], compactPos: [-300, -170, 35], mobilePos: [-380, -620, 35], size: 58, asset: `${A}gateway-governance.svg`, important: true,
     eyebrow: "AI control plane",
     summary: "A unified control and data plane for routing, governing, and observing AI requests.",
     role: "Place consistent access, routing, cost, and security controls in the path of AI traffic.",
@@ -44,7 +44,7 @@ const nodes = [
   },
   {
     id: "runtime", label: "AI Runtime Security", meta: "enforce", cluster: "runtime", glyph: "RT",
-    pos: [310, -135, 55], compactPos: [310, -150, 55], mobilePos: [300, -175, 55], size: 60, asset: `${A}runtime-prevention.svg`, important: true,
+    pos: [310, -135, 55], compactPos: [310, -150, 55], mobilePos: [380, -620, 55], size: 60, asset: `${A}runtime-prevention.svg`, important: true,
     eyebrow: "Real-time enforcement",
     summary: "Detects and blocks AI-specific threats as traffic moves through applications and agents.",
     role: "Apply the same security intelligence through code-level API interception, network interception, or both.",
@@ -53,7 +53,7 @@ const nodes = [
   },
   {
     id: "endpointSecurity", label: "Endpoint Security", meta: "secure agent endpoints", cluster: "endpoint", glyph: "AES",
-    pos: [385, 70, -30], compactPos: [410, 20, -30], mobilePos: [360, 15, -30], size: 54, asset: `${A}runtime-platform.svg`, important: true,
+    pos: [385, 20, -30], compactPos: [410, 20, -30], mobilePos: [380, -330, -30], size: 54, asset: `${A}runtime-platform.svg`, important: true,
     hideOutsideViews: true,
     eyebrow: "Agentic endpoint protection",
     summary: "Cortex Agentic Endpoint Security protects the developer endpoint where autonomous coding agents, extensions, and local AI artifacts operate.",
@@ -63,7 +63,7 @@ const nodes = [
   },
   {
     id: "redTeam", label: "AI Red Teaming", meta: "stress test", cluster: "lifecycle", glyph: "RTM",
-    pos: [-390, 185, 60], compactPos: [-430, 145, 60], mobilePos: [-360, 120, 60], size: 56, asset: `${A}redteam-authentication.svg`, important: true,
+    pos: [-390, 185, 60], compactPos: [-430, 145, 60], mobilePos: [-380, -40, 60], size: 56, asset: `${A}redteam-authentication.svg`, important: true,
     eyebrow: "Adversarial validation",
     summary: "Automated scans test applications, models, and agents against real-world attack techniques.",
     role: "Turn discovered AI endpoints into targets, run attacks, and feed findings back into protection decisions.",
@@ -73,7 +73,7 @@ const nodes = [
   {
     id: "supplyChain", label: "AI Supply Chain Security", meta: "validate artifacts", cluster: "model", glyph: "SC",
     clusterLabel: "SUPPLY CHAIN · VALIDATE ARTIFACTS",
-    pos: [-60, 175, -90], compactPos: [-100, 155, -90], mobilePos: [-70, 300, -90], size: 56, asset: `${A}model-manufacturing.svg`, important: true,
+    pos: [-60, 175, -90], compactPos: [-100, 155, -90], mobilePos: [0, -40, -90], size: 56, asset: `${A}model-manufacturing.svg`, important: true,
     eyebrow: "Pre-production artifact assurance",
     summary: "A unified supply-chain capability that evaluates AI models and agent skills before they reach production.",
     role: "Scan and gate model files and skill packages, then use their verdicts as evidence in the release process.",
@@ -83,7 +83,7 @@ const nodes = [
   {
     id: "modelSecurity", label: "Model Security", meta: "scan model artifacts", cluster: "model", glyph: "MS",
     childOf: "supplyChain", hideOutsideViews: true,
-    pos: [-190, 230, -125], compactPos: [-420, 310, -120], mobilePos: [-330, 470, -120], size: 50, asset: `${A}model-inspection.svg`,
+    pos: [-190, 230, -125], compactPos: [-420, 310, -120], mobilePos: [-380, 280, -120], size: 50, asset: `${A}model-inspection.svg`,
     eyebrow: "Supply-chain child capability",
     summary: "Scans AI model artifacts from supported sources so malicious content, unsafe files, vulnerabilities, and policy violations can be found before deployment.",
     role: "Inspect a model artifact against the Security Group attached to its Model Source, then return findings and a release decision before promotion.",
@@ -98,7 +98,7 @@ const nodes = [
   {
     id: "skillSecurity", label: "AI Skill Security", meta: "scan skills · preview", cluster: "model", glyph: "SS",
     childOf: "supplyChain", hideOutsideViews: true,
-    pos: [100, 235, -70], compactPos: [-80, 310, -70], mobilePos: [190, 470, -70], size: 50, asset: `${A}model-visibility.svg`,
+    pos: [100, 235, -70], compactPos: [-80, 310, -70], mobilePos: [0, 280, -70], size: 50, asset: `${A}model-visibility.svg`,
     eyebrow: "Supply-chain child capability · Preview",
     summary: "Statically analyzes packaged AI skills and produces an Allowed or Blocked verdict before those skills are trusted in an enterprise agent workflow.",
     role: "Upload a ZIP package, inspect SKILL.md and referenced files, evaluate security and governance rules, and use the verdict as an approval gate.",
@@ -114,7 +114,7 @@ const nodes = [
   {
     id: "agentIdentity", label: "AI Agent Identity", meta: "govern agents + MCP", cluster: "agent", glyph: "ID",
     clusterLabel: "AGENT IDENTITY · GOVERN",
-    pos: [350, 175, 45], compactPos: [360, 145, 45], mobilePos: [360, 150, 45], size: 52, asset: `${A}gateway-identity.svg`, important: true,
+    pos: [350, 175, 45], compactPos: [360, 145, 45], mobilePos: [380, -40, 45], size: 52, asset: `${A}gateway-identity.svg`, important: true,
     eyebrow: "Zero-trust agent governance",
     summary: "Secures AI agents and MCP-based workflows through centralized identity, posture, access, and runtime governance.",
     role: "Unify SaaS agent visibility and posture with centralized MCP security so agent access, tools, and behavior can be governed consistently.",
@@ -124,7 +124,7 @@ const nodes = [
   {
     id: "saasAgentSecurity", label: "SaaS Agent Security", meta: "discover + govern", cluster: "agent", glyph: "SAS",
     childOf: "agentIdentity", hideOutsideViews: true,
-    pos: [250, 225, 5], compactPos: [250, 310, 5], mobilePos: [70, 650, 5], size: 49, asset: `${A}runtime-visibility.svg`,
+    pos: [250, 225, 5], compactPos: [250, 310, 5], mobilePos: [380, 280, 5], size: 49, asset: `${A}runtime-visibility.svg`,
     eyebrow: "Agent Identity child capability",
     summary: "Discovers AI agents on supported SaaS platforms, assesses their configuration and access posture, and drives governance and remediation workflows.",
     role: "Onboard an agent platform, inventory its agents and connected resources, assess posture and runtime risk, and act on prioritized recommendations.",
@@ -139,7 +139,7 @@ const nodes = [
   {
     id: "mcpSecurity", label: "MCP Security", meta: "secure MCP tools", cluster: "agent", glyph: "MCP",
     childOf: "agentIdentity", hideOutsideViews: true,
-    pos: [500, 205, 20], compactPos: [430, 385, 20], mobilePos: [360, 650, 20], size: 49, asset: `${A}gateway-controls.svg`,
+    pos: [500, 205, 20], compactPos: [430, 385, 20], mobilePos: [380, 550, 20], size: 49, asset: `${A}gateway-controls.svg`,
     eyebrow: "Agent Identity child capability",
     summary: "Uses the centralized Prisma AIRS MCP Server to expose security tools to MCP clients with authenticated, profile-aware policy and logging.",
     role: "Authenticate an MCP client to the regional Prisma AIRS endpoint, attach an AI Security Profile, invoke the required protection tools, and review MCP scan logs.",
@@ -541,9 +541,9 @@ const views = {
     code: "VIEW 01",
     title: "Focused Prisma AIRS platform",
     focus: "airs",
-    description: "Five official AIRS pillars around one platform core, with four independently inspectable child capabilities.",
-    nodes: ["airs", "gateway", "runtime", "redTeam", "supplyChain", "modelSecurity", "skillSecurity", "agentIdentity", "saasAgentSecurity", "mcpSecurity"],
-    edges: ["airs-gateway", "airs-runtime", "airs-redteam", "airs-supply", "airs-agent-identity", "supply-model", "supply-skill", "identity-saas", "identity-mcp"],
+    description: "The complete starting lens: five AIRS pillars, Endpoint Security, and four independently inspectable child capabilities.",
+    nodes: ["airs", "gateway", "runtime", "endpointSecurity", "redTeam", "supplyChain", "modelSecurity", "skillSecurity", "agentIdentity", "saasAgentSecurity", "mcpSecurity"],
+    edges: ["airs-gateway", "airs-runtime", "airs-endpoint", "airs-redteam", "airs-supply", "airs-agent-identity", "supply-model", "supply-skill", "identity-saas", "identity-mcp"],
   },
   runtime: {
     code: "VIEW 02",
@@ -763,6 +763,8 @@ function createNodes() {
     button.type = "button";
     button.className = `space-node${node.id === "airs" ? " is-platform" : ""}${node.childOf ? " is-child" : ""}`;
     button.dataset.node = node.id;
+    button.setAttribute("aria-controls", "inspector");
+    button.setAttribute("aria-expanded", "false");
     button.style.setProperty("--node-color", colorForCluster(node.cluster));
     button.style.setProperty("--node-size", `${node.size}px`);
     button.style.setProperty("--node-render-size", `${node.size}px`);
@@ -812,7 +814,7 @@ function createNodes() {
     });
     button.addEventListener("click", (event) => {
       event.stopPropagation();
-      selectNode(node.id);
+      toggleNode(node.id);
     });
 
     nodeElements.set(node.id, button);
@@ -821,7 +823,7 @@ function createNodes() {
 }
 
 function effectiveFocus() {
-  return state.hovered || state.keyboardFocus || state.selected;
+  return state.selected || state.hovered || state.keyboardFocus;
 }
 
 function updateViewText(focusId = null) {
@@ -830,7 +832,9 @@ function updateViewText(focusId = null) {
     const count = connectionsFor(focusId).length;
     document.querySelector("#viewCode").textContent = node.glyph;
     document.querySelector("#viewTitle").textContent = node.label;
-    document.querySelector("#viewDescription").textContent = `${count} documented path${count === 1 ? "" : "s"} illuminated. Select the node to inspect details.`;
+    document.querySelector("#viewDescription").textContent = state.selected === focusId
+      ? `${count} documented path${count === 1 ? "" : "s"} illuminated. Click the node again to close details.`
+      : `${count} documented path${count === 1 ? "" : "s"} illuminated. Select the node to inspect details.`;
     return;
   }
   const view = views[state.view];
@@ -865,6 +869,7 @@ function applyVisualState() {
     element.classList.toggle("is-view-active", !focusId && viewNodes.has(id));
     element.classList.toggle("is-view-muted", !focusId && !viewNodes.has(id));
     element.classList.toggle("is-view-hidden", isViewHidden);
+    element.setAttribute("aria-expanded", String(state.selected === id));
   });
 
   edgeElements.forEach(({ group, labelGroup }, id) => {
@@ -1121,8 +1126,18 @@ function selectNode(nodeId) {
   applyVisualState();
 }
 
+function toggleNode(nodeId) {
+  if (state.selected === nodeId && inspector.classList.contains("is-open")) {
+    clearSelection();
+    return;
+  }
+  selectNode(nodeId);
+}
+
 function clearSelection() {
   state.selected = null;
+  state.hovered = null;
+  state.keyboardFocus = null;
   inspector.classList.remove("is-open");
   inspector.setAttribute("aria-hidden", "true");
   resetStageScroll();
@@ -1238,23 +1253,41 @@ function rotatePoint(position, time) {
   return { x: x1, y: y1, z: z2 };
 }
 
-function projectNode(node, time) {
-  const position = viewport.width <= 460
+function positionForNode(node) {
+  return viewport.width <= 460
     ? (node.mobilePos ?? node.compactPos ?? node.pos)
     : viewport.width <= 760
       ? (node.compactPos ?? node.pos)
       : node.pos;
+}
+
+function projectNode(node, time) {
+  const position = positionForNode(node);
   const rotated = rotatePoint(position, time);
-  const fit = clamp(Math.min(viewport.width / 1220, viewport.height / 790) * 1.04, .34, 1.16) * state.zoom;
-  const centerShift = state.selected && viewport.width > 920 ? -115 : 0;
-  const centerX = viewport.width * .5 + centerShift;
-  const centerY = viewport.height * .505 + (viewport.width < 760 ? 22 : 0);
-  const depthScale = clamp(920 / (920 - rotated.z * fit), .72, 1.32);
+  const baseFit = clamp(Math.min(viewport.width / 1220, viewport.height / 790) * 1.04, .34, 1.16);
+  const hasDockedInspector = Boolean(state.selected) && viewport.width > 920;
+  const hasSheetInspector = Boolean(state.selected) && viewport.width <= 760;
+  const inspectorWidth = hasDockedInspector ? Math.min(430, viewport.width - 32) : 0;
+  const graphLeft = hasDockedInspector ? 16 : 0;
+  const graphRight = hasDockedInspector ? viewport.width - inspectorWidth - 32 : viewport.width;
+  const graphWidth = graphRight - graphLeft;
+  const dockedFitCap = clamp((graphWidth - 130) / 800, .34, baseFit);
+  const fitX = (hasDockedInspector ? Math.min(baseFit, dockedFitCap) : baseFit) * state.zoom;
+  const fitY = baseFit * state.zoom;
+  const selectedRotated = hasSheetInspector ? rotatePoint(positionForNode(byId.get(state.selected)), time) : null;
+  const centerX = hasDockedInspector
+    ? graphLeft + graphWidth * .5
+    : viewport.width * .5 - (selectedRotated?.x ?? 0) * fitX;
+  const centerY = hasSheetInspector
+    ? viewport.height * .21 - selectedRotated.y * fitY
+    : viewport.height * .505 + (viewport.width < 760 ? 22 : 0);
+  const depthScale = clamp(920 / (920 - rotated.z * Math.min(fitX, fitY)), .72, 1.32);
+  const sheetScale = hasSheetInspector ? .9 : 1;
   return {
-    x: centerX + rotated.x * fit,
-    y: centerY + rotated.y * fit,
+    x: centerX + rotated.x * fitX,
+    y: centerY + rotated.y * fitY,
     z: rotated.z,
-    scale: depthScale,
+    scale: depthScale * sheetScale,
   };
 }
 

@@ -61,6 +61,10 @@ if (!failures.length) {
       "The Platform view must include Prisma AIRS and all five official pillars",
     );
     check(
+      views.platform.nodes.includes("endpointSecurity") && views.platform.edges.includes("airs-endpoint"),
+      "The Platform view must initially reveal the Endpoint Security integration",
+    );
+    check(
       Object.keys(childNodes).every((id) => views.platform.nodes.includes(id)),
       "The Platform view must include every independently inspectable child node",
     );
@@ -128,6 +132,11 @@ if (!failures.length) {
   check(/\.space-stage\s*\{[\s\S]*?overflow:\s*clip;/.test(css), "The graph stage must not become a scroll container");
   check(/responsiveIconScale\s*\*\s*\.82/.test(app), "The compact node-icon scale must remain enabled");
   check(/stage\.addEventListener\("scroll",\s*resetStageScroll/.test(app), "The graph stage must reset unexpected focus scrolling");
+  check(/function\s+toggleNode\(nodeId\)/.test(app), "Node selection must support same-node click toggling");
+  check(/state\.selected\s*===\s*nodeId[\s\S]*?clearSelection\(\)/.test(app), "A second click on the selected node must close the inspector");
+  check(/return\s+state\.selected\s*\|\|\s*state\.hovered/.test(app), "An open selection must not be overridden by incidental hover after graph reflow");
+  check(/hasDockedInspector[\s\S]*?dockedFitCap/.test(app), "The graph must fit beside the docked inspector");
+  check(/hasSheetInspector[\s\S]*?selectedRotated/.test(app), "The selected node must remain reachable above the compact inspector sheet");
 }
 
 if (failures.length) {
