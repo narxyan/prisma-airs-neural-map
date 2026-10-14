@@ -1,6 +1,6 @@
 {
   "name": "prisma-airs-neural-map",
-  "version": "0.18.1",
+  "version": "0.18.2",
   "private": true,
   "description": "Interactive 3D map of the five Prisma AIRS capability pillars and their documented integration paths.",
   "type": "module",

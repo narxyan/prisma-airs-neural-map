@@ -598,6 +598,30 @@ async function handleDocumentationApi(env) {
   }
 }
 
+async function handleAutomationApi(request, env, pathname) {
+  // This endpoint is intentionally shared across the Site owner's cloud task
+  // and owner browser session. Sites dispatch enforces the confirmed
+  // owner-private project policy before the request reaches this Worker.
+  try {
+    if (pathname === "/api/automation/status" && request.method === "GET") {
+      return jsonResponse(await documentationStatus(env));
+    }
+    if (request.method !== "POST") return new Response("Method not allowed", { status: 405 });
+    const contentLength = Number(request.headers.get("content-length") || 0);
+    if (contentLength > 250_000) return jsonResponse({ error: "Request body is too large." }, { status: 413 });
+    const args = await request.json();
+    if (pathname === "/api/automation/refresh") {
+      return jsonResponse(await refreshDocumentationSources(env, args));
+    }
+    if (pathname === "/api/automation/apply") {
+      return jsonResponse(await applyDocumentationUpdates(env, args));
+    }
+    return new Response("Not found", { status: 404 });
+  } catch (error) {
+    return jsonResponse({ error: error instanceof Error ? error.message : "Automation request failed" }, { status: 400 });
+  }
+}
+
 function decodeBase64(value) {
   const binary = atob(value);
   const bytes = new Uint8Array(binary.length);
@@ -633,6 +657,9 @@ export default {
     if (url.pathname === "/api/documentation") {
       if (request.method !== "GET") return new Response("Method not allowed", { status: 405 });
       return handleDocumentationApi(env);
+    }
+    if (url.pathname.startsWith("/api/automation/")) {
+      return handleAutomationApi(request, env, url.pathname);
     }
     if (url.pathname === "/health") {
       return jsonResponse({ ok: true, service: "prisma-airs-neural-map", monitoredSources: DOCUMENTATION_SOURCES.length });

@@ -14,7 +14,7 @@ AI Supply Chain Security connects to independently interactive Model Security an
 
 ## Weekly documentation refresh
 
-The production Site includes a D1-backed documentation monitor and a private Site MCP writer. A linked cloud schedule runs every Monday morning in `America/Chicago` and:
+The production Site includes a D1-backed documentation monitor, a private Site MCP writer, and a private service-access fallback for unattended jobs. A linked cloud schedule runs every Monday morning in `America/Chicago` and:
 
 1. fetches every official Palo Alto Networks source currently surfaced by a node or integration path;
 2. normalizes and hashes the readable page content;

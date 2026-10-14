@@ -79,6 +79,9 @@ const status = await callTool("get_documentation_status");
 assert(status.monitoring.sourceCount >= 20, "Expected the generated official-source catalog");
 assert(status.monitoring.pendingChanges === 0, "A new monitor should not start with pending changes");
 const source = status.sources[0];
+const serviceStatusResponse = await worker.fetch(new Request("https://site.test/api/automation/status"), env, {});
+const serviceStatus = await serviceStatusResponse.json();
+assert(serviceStatus.monitoring.sourceCount === status.monitoring.sourceCount, "Service-access status must match the MCP tool status");
 
 const originalFetch = globalThis.fetch;
 let revision = 1;

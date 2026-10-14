@@ -150,6 +150,8 @@ if (!failures.length) {
   check(Array.isArray(hosting.capabilities) && hosting.capabilities.includes("mcp"), "The Site must declare its MCP capability");
   check(/refresh_documentation_sources/.test(worker), "The Worker must expose the documentation fetch service");
   check(/apply_documentation_updates/.test(worker), "The Worker must expose the reviewed documentation writer");
+  check(/\/api\/automation\/refresh/.test(worker), "The Worker must expose a private service-access refresh fallback");
+  check(/\/api\/automation\/apply/.test(worker), "The Worker must expose a private service-access apply fallback");
   check(/observed_hash/.test(migration) && /applied_hash/.test(migration), "The schema must preserve observed and applied source revisions separately");
 }
 
