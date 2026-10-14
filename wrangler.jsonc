@@ -1,0 +1,31 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "prisma-airs-neural-map",
+  "main": "dist/server/index.js",
+  "compatibility_date": "2026-10-14",
+  "workers_dev": true,
+  "vars": {
+    "REQUIRE_AUTOMATION_AUTH": "true",
+    "DOCUMENTATION_REVIEW_MODEL": "@cf/meta/llama-4-scout-17b-16e-instruct"
+  },
+  "triggers": {
+    "crons": [
+      "0 14 * * 1",
+      "0 15 * * 1"
+    ]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "prisma-airs-docs",
+      "database_id": "1ee87920-947b-4674-b3a7-b6feecbf5d3c",
+      "migrations_dir": "drizzle"
+    }
+  ],
+  "ai": {
+    "binding": "AI"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

@@ -12,13 +12,14 @@ const cssPath = path.join(distRoot, "styles.css");
 const hostingPath = path.join(repositoryRoot, ".openai", "hosting.json");
 const workerPath = path.join(repositoryRoot, "worker", "index.js");
 const migrationPath = path.join(repositoryRoot, "drizzle", "0000_documentation_monitor.sql");
+const wranglerPath = path.join(repositoryRoot, "wrangler.jsonc");
 
 const failures = [];
 const check = (condition, message) => {
   if (!condition) failures.push(message);
 };
 
-for (const file of [htmlPath, appPath, cssPath, workerPath, migrationPath]) {
+for (const file of [htmlPath, appPath, cssPath, workerPath, migrationPath, wranglerPath]) {
   check(existsSync(file), `Missing required file: ${path.relative(repositoryRoot, file)}`);
 }
 
@@ -31,6 +32,7 @@ if (!failures.length) {
     : null;
   const worker = readFileSync(workerPath, "utf8");
   const migration = readFileSync(migrationPath, "utf8");
+  const wrangler = JSON.parse(readFileSync(wranglerPath, "utf8"));
   const dataStart = app.indexOf("const COLORS");
   const dataEnd = app.indexOf("const byId");
 
@@ -156,7 +158,16 @@ if (!failures.length) {
   check(/apply_documentation_updates/.test(worker), "The Worker must expose the reviewed documentation writer");
   check(/\/api\/automation\/refresh/.test(worker), "The Worker must expose a private service-access refresh fallback");
   check(/\/api\/automation\/apply/.test(worker), "The Worker must expose a private service-access apply fallback");
+  check(/async scheduled\(controller, env, ctx\)/.test(worker), "The Worker must expose a Cloudflare scheduled handler");
+  check(/isAutomationAuthorized/.test(worker), "Automation write routes must require production authorization");
+  check(/reviewNodeWithAi/.test(worker), "The weekly workflow must review substantive changes before publishing them");
   check(/observed_hash/.test(migration) && /applied_hash/.test(migration), "The schema must preserve observed and applied source revisions separately");
+  check(wrangler.name === "prisma-airs-neural-map", "Wrangler must target the production Worker name");
+  check(wrangler.main === "dist/server/index.js", "Wrangler must deploy the generated Worker artifact");
+  check(wrangler.d1_databases?.some(({ binding }) => binding === "DB"), "Wrangler must bind the production D1 database as DB");
+  check(wrangler.ai?.binding === "AI", "Wrangler must bind Workers AI for reviewed documentation updates");
+  check(wrangler.vars?.REQUIRE_AUTOMATION_AUTH === "true", "Cloudflare automation write routes must fail closed");
+  check(wrangler.triggers?.crons?.includes("0 14 * * 1") && wrangler.triggers?.crons?.includes("0 15 * * 1"), "Cloudflare must cover 09:00 America/Chicago across daylight-saving changes");
 }
 
 if (failures.length) {

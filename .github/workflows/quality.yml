@@ -8,9 +8,14 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   verify-static-site:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -18,5 +23,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+      - name: Install pinned deployment tooling
+        run: npm ci
       - name: Run production checks
         run: npm run check
+      - name: Validate Cloudflare deployment bundle
+        run: npx wrangler deploy --dry-run --outdir .wrangler-dry-run

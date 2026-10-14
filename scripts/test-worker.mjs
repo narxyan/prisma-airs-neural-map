@@ -113,9 +113,53 @@ try {
   const api = await apiResponse.json();
   assert(api.ok === true, "Documentation API should be healthy");
   assert(api.nodes[nodeId]?.summary === "Reviewed documentation content from the hosted update service.", "Live API should expose the reviewed node update");
+
+  const protectedResponse = await worker.fetch(new Request("https://site.test/api/automation/refresh", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ source_ids: [source.sourceId] }),
+  }), {
+    ...env,
+    REQUIRE_AUTOMATION_AUTH: "true",
+    AUTOMATION_TOKEN: "test-only-secret",
+  }, {});
+  assert(protectedResponse.status === 401, "Production automation writes must reject unauthenticated requests");
+
+  revision = 3;
+  const scheduledEnv = {
+    ...env,
+    AI: {
+      async run() {
+        return {
+          response: JSON.stringify({
+            substantive_change: true,
+            change_summary: "The official source documents a reviewed scheduled revision.",
+            summary: "Automatically reviewed Prisma AIRS documentation content.",
+            role: "Keeps the node aligned with its monitored official technical source.",
+            facts: ["A scheduled source revision was reviewed through Workers AI."],
+            prerequisites: ["Use the currently documented Palo Alto Networks configuration."],
+          }),
+        };
+      },
+    },
+  };
+  let scheduledPromise;
+  await worker.scheduled({
+    scheduledTime: Date.parse("2026-07-06T14:00:00.000Z"),
+    cron: "0 14 * * 1",
+  }, scheduledEnv, {
+    waitUntil(promise) { scheduledPromise = promise; },
+  });
+  assert(scheduledPromise, "The daylight-saving cron should resolve to Monday 09:00 America/Chicago");
+  const scheduledResult = await scheduledPromise;
+  assert(scheduledResult.ok === true, "The scheduled documentation run should succeed");
+  assert(scheduledResult.checked === status.monitoring.sourceCount, "The scheduled run should check every monitored source");
+  const scheduledApiResponse = await worker.fetch(new Request("https://site.test/api/documentation"), scheduledEnv, {});
+  const scheduledApi = await scheduledApiResponse.json();
+  assert(scheduledApi.nodes[nodeId]?.summary === "Automatically reviewed Prisma AIRS documentation content.", "The scheduled reviewer should publish validated node content");
 } finally {
   globalThis.fetch = originalFetch;
   database.close();
 }
 
-console.log("Documentation service checks passed: baseline, change detection, pending retention, reviewed apply, and live API verified.");
+console.log("Documentation service checks passed: baseline, change detection, auth, scheduled AI review, apply, and live API verified.");
