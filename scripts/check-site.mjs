@@ -9,13 +9,16 @@ const distRoot = path.join(repositoryRoot, "dist");
 const htmlPath = path.join(distRoot, "index.html");
 const appPath = path.join(distRoot, "app.js");
 const cssPath = path.join(distRoot, "styles.css");
+const hostingPath = path.join(repositoryRoot, ".openai", "hosting.json");
+const workerPath = path.join(repositoryRoot, "worker", "index.js");
+const migrationPath = path.join(repositoryRoot, "drizzle", "0000_documentation_monitor.sql");
 
 const failures = [];
 const check = (condition, message) => {
   if (!condition) failures.push(message);
 };
 
-for (const file of [htmlPath, appPath, cssPath, path.join(repositoryRoot, ".openai", "hosting.json")]) {
+for (const file of [htmlPath, appPath, cssPath, hostingPath, workerPath, migrationPath]) {
   check(existsSync(file), `Missing required file: ${path.relative(repositoryRoot, file)}`);
 }
 
@@ -23,6 +26,9 @@ if (!failures.length) {
   const html = readFileSync(htmlPath, "utf8");
   const app = readFileSync(appPath, "utf8");
   const css = readFileSync(cssPath, "utf8");
+  const hosting = JSON.parse(readFileSync(hostingPath, "utf8"));
+  const worker = readFileSync(workerPath, "utf8");
+  const migration = readFileSync(migrationPath, "utf8");
   const dataStart = app.indexOf("const COLORS");
   const dataEnd = app.indexOf("const byId");
 
@@ -137,6 +143,14 @@ if (!failures.length) {
   check(/return\s+state\.selected\s*\|\|\s*state\.hovered/.test(app), "An open selection must not be overridden by incidental hover after graph reflow");
   check(/hasDockedInspector[\s\S]*?dockedFitCap/.test(app), "The graph must fit beside the docked inspector");
   check(/hasSheetInspector[\s\S]*?selectedRotated/.test(app), "The selected node must remain reachable above the compact inspector sheet");
+  check(/fetch\("\/api\/documentation"/.test(app), "The client must load hosted documentation updates");
+  check(/documentationFreshness/.test(html), "The documentation tab must expose monitor freshness");
+  check(hosting.static == null, "The production Site must use a Worker rather than the static profile");
+  check(hosting.d1 === "DB", "The documentation monitor must use the DB binding");
+  check(Array.isArray(hosting.capabilities) && hosting.capabilities.includes("mcp"), "The Site must declare its MCP capability");
+  check(/refresh_documentation_sources/.test(worker), "The Worker must expose the documentation fetch service");
+  check(/apply_documentation_updates/.test(worker), "The Worker must expose the reviewed documentation writer");
+  check(/observed_hash/.test(migration) && /applied_hash/.test(migration), "The schema must preserve observed and applied source revisions separately");
 }
 
 if (failures.length) {
@@ -145,4 +159,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("Site checks passed: five AIRS pillars, four interactive child nodes, graph integrity, official docs, assets, and metadata verified.");
+console.log("Site checks passed: AIRS graph integrity, responsive inspector content, official docs, Worker monitor, MCP writer, persistence, assets, and metadata verified.");

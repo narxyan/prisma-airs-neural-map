@@ -564,6 +564,13 @@ const views = {
 };
 
 const byId = new Map(nodes.map((node) => [node.id, node]));
+const documentationState = {
+  status: "loading",
+  lastCheckedAt: null,
+  pendingChanges: 0,
+  failedSources: 0,
+  sourceCount: 0,
+};
 const edgeById = new Map(edges.map((edge) => [edge.id, edge]));
 const stage = document.querySelector("#spaceStage");
 const canvas = document.querySelector("#starfield");
@@ -1056,6 +1063,78 @@ function documentationFor(node) {
   });
 }
 
+function formatMonitorTime(value) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(date);
+}
+
+function updateDocumentationFreshness(node) {
+  const element = document.querySelector("#documentationFreshness");
+  if (!element) return;
+
+  if (documentationState.status === "loading") {
+    element.textContent = "Weekly documentation monitor is initializing.";
+    return;
+  }
+
+  if (documentationState.status === "unavailable") {
+    element.textContent = "Live freshness status is temporarily unavailable; the verified built-in documentation remains available.";
+    return;
+  }
+
+  const checkedAt = formatMonitorTime(documentationState.lastCheckedAt);
+  const nodeUpdatedAt = formatMonitorTime(node.managedUpdatedAt);
+  const parts = [
+    checkedAt ? `Automatically checked ${checkedAt}` : "Awaiting the first scheduled documentation check",
+    `${documentationState.sourceCount} official sources monitored`,
+  ];
+  if (nodeUpdatedAt) parts.push(`this node updated ${nodeUpdatedAt}`);
+  if (documentationState.pendingChanges > 0) parts.push(`${documentationState.pendingChanges} change${documentationState.pendingChanges === 1 ? "" : "s"} awaiting review`);
+  if (documentationState.failedSources > 0) parts.push(`${documentationState.failedSources} source${documentationState.failedSources === 1 ? "" : "s"} will be retried`);
+  element.textContent = parts.join(" · ");
+}
+
+async function loadManagedDocumentation() {
+  try {
+    const response = await fetch("/api/documentation", {
+      headers: { accept: "application/json" },
+      cache: "no-store",
+    });
+    if (!response.ok) throw new Error(`Documentation service returned ${response.status}`);
+    const payload = await response.json();
+
+    Object.entries(payload.nodes ?? {}).forEach(([nodeId, managed]) => {
+      const node = byId.get(nodeId);
+      if (!node || !managed || typeof managed !== "object") return;
+      for (const field of ["summary", "role", "facts", "prerequisites", "docs"]) {
+        if (managed[field] !== undefined) node[field] = managed[field];
+      }
+      node.managedUpdatedAt = managed.updatedAt ?? null;
+      node.managedChangeSummary = managed.changeSummary ?? null;
+    });
+
+    Object.assign(documentationState, {
+      status: "ready",
+      lastCheckedAt: payload.monitoring?.lastCheckedAt ?? null,
+      pendingChanges: Number(payload.monitoring?.pendingChanges ?? 0),
+      failedSources: Number(payload.monitoring?.failedSources ?? 0),
+      sourceCount: Number(payload.monitoring?.sourceCount ?? 0),
+    });
+  } catch (error) {
+    console.warn("Documentation freshness service is unavailable.", error);
+    documentationState.status = "unavailable";
+  }
+
+  if (state.selected && inspector.classList.contains("is-open")) {
+    updateInspector(byId.get(state.selected));
+  }
+}
+
 function createDocumentationCard(sourceDoc) {
   const link = document.createElement("a");
   link.className = "documentation-card";
@@ -1113,6 +1192,7 @@ function updateInspector(node, openEdgeId = null) {
 
   const documentation = documentationFor(node).map(createDocumentationCard);
   document.querySelector("#documentationList").replaceChildren(...documentation);
+  updateDocumentationFreshness(node);
 }
 
 function selectNode(nodeId) {
@@ -1477,4 +1557,5 @@ resize();
 resetStageScroll();
 updateCameraReadout();
 applyVisualState();
+void loadManagedDocumentation();
 requestAnimationFrame(frame);

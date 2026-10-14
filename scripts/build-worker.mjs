@@ -1,0 +1,168 @@
+import { createHash } from "node:crypto";
+import { mkdir, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
+import path from "node:path";
+import process from "node:process";
+import vm from "node:vm";
+import { fileURLToPath } from "node:url";
+
+const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const distRoot = path.join(projectRoot, "dist");
+const workerRoot = path.join(distRoot, "server");
+const runtimePath = path.join(projectRoot, "worker", "index.js");
+const hostingPath = path.join(projectRoot, ".openai", "hosting.json");
+const outputHostingPath = path.join(distRoot, ".openai", "hosting.json");
+
+const [html, css, app, runtime, hosting] = await Promise.all([
+  readFile(path.join(distRoot, "index.html"), "utf8"),
+  readFile(path.join(distRoot, "styles.css"), "utf8"),
+  readFile(path.join(distRoot, "app.js"), "utf8"),
+  readFile(runtimePath, "utf8"),
+  readFile(hostingPath, "utf8"),
+]);
+
+const dataStart = app.indexOf("const COLORS");
+const dataEnd = app.indexOf("const byId");
+if (dataStart < 0 || dataEnd <= dataStart) {
+  throw new Error("Could not locate the application data block in dist/app.js");
+}
+
+const sandbox = {};
+vm.runInNewContext(
+  `${app.slice(dataStart, dataEnd)}\nglobalThis.__siteData = { nodes, edges, integrationGuides };`,
+  sandbox,
+  { filename: "dist/app.js", timeout: 1_000 },
+);
+
+const { nodes, edges, integrationGuides } = sandbox.__siteData;
+const defaultNodes = nodes.map((node) => ({
+  id: node.id,
+  label: node.label,
+  summary: node.summary,
+  role: node.role,
+  facts: node.facts ?? [],
+  prerequisites: node.prerequisites ?? [],
+  docs: node.docs ?? [{
+    label: `${node.label} documentation`,
+    type: "Primary capability page",
+    url: node.source,
+  }],
+}));
+
+const approvedHosts = new Set([
+  "docs.paloaltonetworks.com",
+  "www.paloaltonetworks.com",
+  "pan.dev",
+]);
+const sourcesByUrl = new Map();
+
+function registerSource({ label, url, nodeIds, kind }) {
+  if (!url) return;
+  const parsed = new URL(url);
+  if (parsed.protocol !== "https:" || !approvedHosts.has(parsed.hostname)) return;
+  const canonicalUrl = parsed.toString();
+  const existing = sourcesByUrl.get(canonicalUrl);
+  if (existing) {
+    nodeIds.forEach((nodeId) => existing.nodeIds.add(nodeId));
+    if (kind === "node-primary") existing.kind = kind;
+    return;
+  }
+  sourcesByUrl.set(canonicalUrl, {
+    sourceId: `src_${createHash("sha256").update(canonicalUrl).digest("hex").slice(0, 12)}`,
+    label,
+    url: canonicalUrl,
+    nodeIds: new Set(nodeIds),
+    kind,
+  });
+}
+
+for (const node of nodes) {
+  registerSource({
+    label: `${node.label} primary documentation`,
+    url: node.source,
+    nodeIds: [node.id],
+    kind: "node-primary",
+  });
+  for (const document of node.docs ?? []) {
+    registerSource({
+      label: document.label,
+      url: document.url,
+      nodeIds: [node.id],
+      kind: "node-documentation",
+    });
+  }
+}
+
+const edgesById = new Map(edges.map((edge) => [edge.id, edge]));
+for (const [edgeId, guide] of Object.entries(integrationGuides)) {
+  const edge = edgesById.get(edgeId);
+  if (!edge) continue;
+  for (const source of guide.sources ?? []) {
+    registerSource({
+      label: source.label,
+      url: source.url,
+      nodeIds: [edge.from, edge.to],
+      kind: "integration-documentation",
+    });
+  }
+}
+
+const documentationSources = [...sourcesByUrl.values()]
+  .map((source) => ({ ...source, nodeIds: [...source.nodeIds].sort() }))
+  .sort((a, b) => a.label.localeCompare(b.label));
+
+async function collectAssets(directory, prefix = "/assets") {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const output = {};
+  for (const entry of entries) {
+    const absolute = path.join(directory, entry.name);
+    const route = `${prefix}/${entry.name}`;
+    if (entry.isDirectory()) Object.assign(output, await collectAssets(absolute, route));
+    else if (entry.isFile()) {
+      const bytes = await readFile(absolute);
+      output[route] = {
+        body: bytes.toString("base64"),
+        encoding: "base64",
+        contentType: contentTypeFor(entry.name),
+      };
+    }
+  }
+  return output;
+}
+
+function contentTypeFor(filename) {
+  switch (path.extname(filename).toLowerCase()) {
+    case ".svg": return "image/svg+xml; charset=utf-8";
+    case ".png": return "image/png";
+    case ".jpg":
+    case ".jpeg": return "image/jpeg";
+    case ".webp": return "image/webp";
+    default: return "application/octet-stream";
+  }
+}
+
+const siteFiles = {
+  "/": { body: html, contentType: "text/html; charset=utf-8" },
+  "/index.html": { body: html, contentType: "text/html; charset=utf-8" },
+  "/styles.css": { body: css, contentType: "text/css; charset=utf-8" },
+  "/app.js": { body: app, contentType: "text/javascript; charset=utf-8" },
+  ...await collectAssets(path.join(distRoot, "assets")),
+};
+
+const generated = [
+  "// Generated by scripts/build-worker.mjs. Edit worker/index.js or dist source files instead.",
+  `const SITE_FILES = ${JSON.stringify(siteFiles)};`,
+  `const DEFAULT_NODES = ${JSON.stringify(defaultNodes)};`,
+  `const DOCUMENTATION_SOURCES = ${JSON.stringify(documentationSources)};`,
+  runtime,
+].join("\n\n");
+
+await rm(workerRoot, { recursive: true, force: true });
+await mkdir(workerRoot, { recursive: true });
+await mkdir(path.dirname(outputHostingPath), { recursive: true });
+await Promise.all([
+  writeFile(path.join(workerRoot, "index.js"), generated),
+  writeFile(outputHostingPath, hosting.endsWith("\n") ? hosting : `${hosting}\n`),
+]);
+
+const outputSize = (await stat(path.join(workerRoot, "index.js"))).size;
+console.log(`Built Worker (${documentationSources.length} monitored sources, ${defaultNodes.length} nodes, ${outputSize} bytes).`);
