@@ -2,5 +2,20 @@
 node_modules/
 .sites-runtime/
 dist/server/
-dist/.openai/
 *.log
+
+# Local AI-assistant and OpenAI workspace metadata
+.codex/
+**/.codex/
+.chatgpt/
+**/.chatgpt/
+.openai/
+**/.openai/
+
+# Assistant-specific instruction/config files, if added locally
+CODEX.md
+**/CODEX.md
+CHATGPT.md
+**/CHATGPT.md
+OPENAI.md
+**/OPENAI.md

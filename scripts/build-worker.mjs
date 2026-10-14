@@ -17,7 +17,10 @@ const [html, css, app, runtime, hosting] = await Promise.all([
   readFile(path.join(distRoot, "styles.css"), "utf8"),
   readFile(path.join(distRoot, "app.js"), "utf8"),
   readFile(runtimePath, "utf8"),
-  readFile(hostingPath, "utf8"),
+  readFile(hostingPath, "utf8").catch((error) => {
+    if (error?.code === "ENOENT") return null;
+    throw error;
+  }),
 ]);
 
 const dataStart = app.indexOf("const COLORS");
@@ -158,11 +161,15 @@ const generated = [
 
 await rm(workerRoot, { recursive: true, force: true });
 await mkdir(workerRoot, { recursive: true });
-await mkdir(path.dirname(outputHostingPath), { recursive: true });
-await Promise.all([
-  writeFile(path.join(workerRoot, "index.js"), generated),
-  writeFile(outputHostingPath, hosting.endsWith("\n") ? hosting : `${hosting}\n`),
-]);
+await writeFile(path.join(workerRoot, "index.js"), generated);
+
+// The Sites manifest is local deployment metadata and is intentionally
+// gitignored. Copy it into the deployable bundle when it is available, while
+// keeping ordinary GitHub builds independent of OpenAI-specific files.
+if (hosting != null) {
+  await mkdir(path.dirname(outputHostingPath), { recursive: true });
+  await writeFile(outputHostingPath, hosting.endsWith("\n") ? hosting : `${hosting}\n`);
+}
 
 const outputSize = (await stat(path.join(workerRoot, "index.js"))).size;
 console.log(`Built Worker (${documentationSources.length} monitored sources, ${defaultNodes.length} nodes, ${outputSize} bytes).`);

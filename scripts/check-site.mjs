@@ -18,7 +18,7 @@ const check = (condition, message) => {
   if (!condition) failures.push(message);
 };
 
-for (const file of [htmlPath, appPath, cssPath, hostingPath, workerPath, migrationPath]) {
+for (const file of [htmlPath, appPath, cssPath, workerPath, migrationPath]) {
   check(existsSync(file), `Missing required file: ${path.relative(repositoryRoot, file)}`);
 }
 
@@ -26,7 +26,9 @@ if (!failures.length) {
   const html = readFileSync(htmlPath, "utf8");
   const app = readFileSync(appPath, "utf8");
   const css = readFileSync(cssPath, "utf8");
-  const hosting = JSON.parse(readFileSync(hostingPath, "utf8"));
+  const hosting = existsSync(hostingPath)
+    ? JSON.parse(readFileSync(hostingPath, "utf8"))
+    : null;
   const worker = readFileSync(workerPath, "utf8");
   const migration = readFileSync(migrationPath, "utf8");
   const dataStart = app.indexOf("const COLORS");
@@ -145,9 +147,11 @@ if (!failures.length) {
   check(/hasSheetInspector[\s\S]*?selectedRotated/.test(app), "The selected node must remain reachable above the compact inspector sheet");
   check(/fetch\("\/api\/documentation"/.test(app), "The client must load hosted documentation updates");
   check(/documentationFreshness/.test(html), "The documentation tab must expose monitor freshness");
-  check(hosting.static == null, "The production Site must use a Worker rather than the static profile");
-  check(hosting.d1 === "DB", "The documentation monitor must use the DB binding");
-  check(Array.isArray(hosting.capabilities) && hosting.capabilities.includes("mcp"), "The Site must declare its MCP capability");
+  if (hosting) {
+    check(hosting.static == null, "The production Site must use a Worker rather than the static profile");
+    check(hosting.d1 === "DB", "The documentation monitor must use the DB binding");
+    check(Array.isArray(hosting.capabilities) && hosting.capabilities.includes("mcp"), "The Site must declare its MCP capability");
+  }
   check(/refresh_documentation_sources/.test(worker), "The Worker must expose the documentation fetch service");
   check(/apply_documentation_updates/.test(worker), "The Worker must expose the reviewed documentation writer");
   check(/\/api\/automation\/refresh/.test(worker), "The Worker must expose a private service-access refresh fallback");
