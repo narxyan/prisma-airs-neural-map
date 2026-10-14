@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "prisma-airs-neural-map",
+  "name": "prisma-airs-map",
   "main": "dist/server/index.js",
   "compatibility_date": "2026-10-14",
   "workers_dev": true,

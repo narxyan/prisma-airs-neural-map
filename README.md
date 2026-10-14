@@ -29,7 +29,7 @@ The public map only has read access to published overrides. Manual refresh, appl
 
 Production is defined by `wrangler.jsonc`:
 
-- Worker: `prisma-airs-neural-map`
+- Worker: `prisma-airs-map`
 - generated entry point: `dist/server/index.js`
 - D1 binding: `DB` → `prisma-airs-docs`
 - Workers AI binding: `AI`

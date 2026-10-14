@@ -162,7 +162,7 @@ if (!failures.length) {
   check(/isAutomationAuthorized/.test(worker), "Automation write routes must require production authorization");
   check(/reviewNodeWithAi/.test(worker), "The weekly workflow must review substantive changes before publishing them");
   check(/observed_hash/.test(migration) && /applied_hash/.test(migration), "The schema must preserve observed and applied source revisions separately");
-  check(wrangler.name === "prisma-airs-neural-map", "Wrangler must target the production Worker name");
+  check(wrangler.name === "prisma-airs-map", "Wrangler must target the production Worker name");
   check(wrangler.main === "dist/server/index.js", "Wrangler must deploy the generated Worker artifact");
   check(wrangler.d1_databases?.some(({ binding }) => binding === "DB"), "Wrangler must bind the production D1 database as DB");
   check(wrangler.ai?.binding === "AI", "Wrangler must bind Workers AI for reviewed documentation updates");

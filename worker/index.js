@@ -861,7 +861,7 @@ export default {
     if (url.pathname === "/health") {
       return jsonResponse({
         ok: true,
-        service: "prisma-airs-neural-map",
+        service: "prisma-airs-map",
         monitoredSources: DOCUMENTATION_SOURCES.length,
         weeklyAutomation: `Monday 09:00 ${DOCUMENTATION_TIME_ZONE}`,
         automatedReview: Boolean(env.AI?.run),
