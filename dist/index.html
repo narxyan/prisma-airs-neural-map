@@ -32,11 +32,22 @@
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=18" />
+    <link rel="stylesheet" href="./styles.css?v=19" />
   </head>
   <body>
     <canvas id="starfield" aria-hidden="true"></canvas>
     <div class="galaxy-wash" aria-hidden="true"></div>
+
+    <section class="site-notice" aria-label="Independent project disclaimer">
+      <div class="site-notice-copy">
+        <strong>Private site</strong>
+        <span>Not an official Palo Alto Networks website. Content and code may contain errors or omissions.</span>
+      </div>
+      <div class="site-notice-actions">
+        <span class="site-copyright">© 2026 Narayan Soni</span>
+        <button id="openLegalNotice" type="button">Legal &amp; privacy</button>
+      </div>
+    </section>
 
     <header class="hud-header">
       <div class="brand-panel">
@@ -165,6 +176,57 @@
       </aside>
     </main>
 
-    <script src="./app.js?v=18" defer></script>
+    <dialog id="legalDialog" class="legal-dialog" aria-labelledby="legalDialogTitle" aria-describedby="legalDialogIntro">
+      <div class="legal-dialog-header">
+        <div>
+          <span>INDEPENDENT PROJECT</span>
+          <h2 id="legalDialogTitle">Legal notice &amp; privacy</h2>
+        </div>
+        <button id="closeLegalNotice" class="legal-dialog-close" type="button" aria-label="Close legal notice">×</button>
+      </div>
+
+      <div class="legal-dialog-body">
+        <p id="legalDialogIntro" class="legal-dialog-intro">
+          This is a private, independent informational project by Narayan Soni. It is not an official Palo Alto Networks website and is not affiliated with, endorsed by, or sponsored by Palo Alto Networks.
+        </p>
+
+        <section>
+          <h3>Accuracy &amp; warranty</h3>
+          <p>
+            Technical content, relationship maps, workflows, and code examples are provided “as is” for learning and prototyping. They may be incomplete, outdated, or contain errors or omissions. Validate all configurations and code against the applicable official documentation before using them. No warranty is provided.
+          </p>
+        </section>
+
+        <section>
+          <h3>Copyright &amp; third-party rights</h3>
+          <p>
+            © 2026 Narayan Soni. All rights reserved. The original site code, explanatory text, information architecture, and visual presentation are covered by the repository licence. Palo Alto Networks and other third-party product names, documentation, logos, and trademarks are excluded and remain the property of their respective owners.
+          </p>
+        </section>
+
+        <section>
+          <h3>Privacy</h3>
+          <p>
+            This site has no user accounts, contact form, advertising cookies, or embedded analytics SDK. Your selected colour theme is stored only in your browser. Cloudflare processes technical request and access data to deliver, secure, and operate the site. Google Fonts receives the network requests needed to serve the site fonts. External documentation links are governed by their destination sites’ privacy policies.
+          </p>
+          <div class="legal-links" aria-label="Related privacy policies">
+            <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noreferrer">Cloudflare privacy policy ↗</a>
+            <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer">Google privacy policy ↗</a>
+          </div>
+        </section>
+
+        <section>
+          <h3>Contact</h3>
+          <p><a href="mailto:narayan.codes@gmail.com">narayan.codes@gmail.com</a></p>
+        </section>
+      </div>
+
+      <footer class="legal-dialog-footer">
+        <span>Last updated 14 October 2026</span>
+        <button id="legalDone" type="button">Done</button>
+      </footer>
+    </dialog>
+
+    <script src="./app.js?v=19" defer></script>
   </body>
 </html>

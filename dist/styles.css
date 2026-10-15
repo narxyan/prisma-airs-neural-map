@@ -1,5 +1,6 @@
 :root {
   color-scheme: dark;
+  --site-notice-height: 44px;
   --bg: #02040b;
   --canvas-bg: #02040b;
   --panel: rgba(7, 12, 25, 0.82);
@@ -45,6 +46,14 @@
   --integration-code-text: #dbe8ff;
   --integration-note-bg: rgba(3,192,232,.07);
   --source-text: #edf3ff;
+  --notice-bg: rgba(5, 10, 22, .96);
+  --notice-border: rgba(3, 192, 232, .32);
+  --notice-text: #d7e3f7;
+  --notice-label: #69e4fa;
+  --notice-button-bg: rgba(3, 192, 232, .09);
+  --notice-button-border: rgba(3, 192, 232, .34);
+  --dialog-bg: #080e1d;
+  --dialog-backdrop: rgba(0, 3, 10, .76);
   --galaxy-wash:
     radial-gradient(ellipse at 48% 46%, rgba(31, 81, 172, .11), transparent 28%),
     radial-gradient(ellipse at 66% 59%, rgba(101, 47, 168, .07), transparent 34%),
@@ -107,6 +116,14 @@
   --integration-code-text: #eaf1ff;
   --integration-note-bg: rgba(36,91,255,.07);
   --source-text: #142742;
+  --notice-bg: rgba(248, 251, 255, .97);
+  --notice-border: rgba(36, 91, 255, .24);
+  --notice-text: #263a58;
+  --notice-label: #0759cf;
+  --notice-button-bg: rgba(36, 91, 255, .07);
+  --notice-button-border: rgba(36, 91, 255, .25);
+  --dialog-bg: #f8fbff;
+  --dialog-backdrop: rgba(22, 34, 54, .42);
   --galaxy-wash:
     radial-gradient(ellipse at 48% 46%, rgba(53, 113, 218, .15), transparent 30%),
     radial-gradient(ellipse at 68% 60%, rgba(132, 86, 214, .10), transparent 35%),
@@ -146,10 +163,59 @@ button { color: inherit; }
   transition: background .3s ease;
 }
 
+.site-notice {
+  position: fixed;
+  z-index: 60;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--site-notice-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 6px 16px;
+  color: var(--notice-text);
+  border-bottom: 1px solid var(--notice-border);
+  background: var(--notice-bg);
+  box-shadow: 0 8px 28px color-mix(in srgb, var(--bg) 58%, transparent);
+  backdrop-filter: blur(18px);
+}
+.site-notice-copy,
+.site-notice-actions { display: flex; align-items: center; min-width: 0; }
+.site-notice-copy { gap: 10px; }
+.site-notice-copy strong {
+  flex: 0 0 auto;
+  color: var(--notice-label);
+  font: 600 .59rem/1 var(--font-mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.site-notice-copy span { min-width: 0; font-size: .7rem; line-height: 1.25; }
+.site-notice-actions { flex: 0 0 auto; gap: 12px; }
+.site-copyright { color: var(--faint); font: 500 .56rem/1 var(--font-mono); white-space: nowrap; }
+.site-notice button,
+.legal-dialog button {
+  color: inherit;
+  border: 1px solid var(--notice-button-border);
+  background: var(--notice-button-bg);
+  cursor: pointer;
+}
+.site-notice button {
+  min-height: 30px;
+  padding: 0 10px;
+  color: var(--notice-label);
+  font-size: .65rem;
+  font-weight: 600;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+.site-notice button:hover { background: color-mix(in srgb, var(--notice-button-bg) 70%, var(--notice-label) 10%); }
+
 .hud-header {
   position: fixed;
   z-index: 40;
-  top: 16px;
+  top: calc(var(--site-notice-height) + 12px);
   left: 16px;
   right: 16px;
   display: flex;
@@ -628,7 +694,7 @@ button { color: inherit; }
 .inspector {
   position: absolute;
   z-index: 35;
-  top: 88px;
+  top: calc(var(--site-notice-height) + 72px);
   right: 16px;
   bottom: 18px;
   width: min(430px, calc(100% - 32px));
@@ -944,6 +1010,68 @@ button { color: inherit; }
 .documentation-card small { color: var(--faint); font: 500 .54rem/1.25 var(--font-mono); letter-spacing: .04em; text-transform: uppercase; }
 .documentation-card i { color: var(--detail-color, var(--gateway)); font-style: normal; font-size: .9rem; }
 
+.legal-dialog {
+  width: min(680px, calc(100% - 32px));
+  max-height: min(780px, calc(100% - 32px));
+  margin: auto;
+  padding: 0;
+  overflow: hidden;
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+  border-radius: 20px;
+  background: var(--dialog-bg);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, .36), inset 0 1px 0 rgba(255, 255, 255, .05);
+}
+.legal-dialog::backdrop { background: var(--dialog-backdrop); backdrop-filter: blur(7px); }
+.legal-dialog-header,
+.legal-dialog-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+}
+.legal-dialog-header { border-bottom: 1px solid var(--line); }
+.legal-dialog-header > div { display: grid; gap: 5px; }
+.legal-dialog-header span { color: var(--gateway); font: 600 .57rem/1 var(--font-mono); letter-spacing: .11em; }
+.legal-dialog h2 { margin: 0; font-size: 1.35rem; letter-spacing: -.025em; }
+.legal-dialog-close {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 1.25rem;
+  line-height: 1;
+  border-color: var(--line) !important;
+  border-radius: 9px;
+  background: var(--control-bg) !important;
+}
+.legal-dialog-body {
+  max-height: min(570px, calc(100vh - 210px));
+  padding: 20px;
+  overflow-y: auto;
+  scrollbar-color: var(--faint) transparent;
+}
+.legal-dialog-intro { color: var(--detail-summary) !important; font-size: .85rem !important; }
+.legal-dialog section { padding-top: 17px; margin-top: 17px; border-top: 1px solid var(--line); }
+.legal-dialog h3 { margin: 0 0 7px; color: var(--text); font-size: .78rem; letter-spacing: -.01em; }
+.legal-dialog p { margin: 0; color: var(--detail-body); font-size: .75rem; line-height: 1.65; }
+.legal-dialog a { color: var(--gateway); text-underline-offset: 3px; }
+.legal-links { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 11px; }
+.legal-links a { font: 500 .62rem/1.4 var(--font-mono); }
+.legal-dialog-footer { border-top: 1px solid var(--line); }
+.legal-dialog-footer span { color: var(--faint); font: 500 .56rem/1.3 var(--font-mono); }
+.legal-dialog-footer button {
+  min-height: 34px;
+  padding: 0 16px;
+  color: var(--notice-label);
+  font-size: .7rem;
+  font-weight: 600;
+  border-radius: 9px;
+}
+
 :root[data-theme="light"] .flow-ribbon-bed { opacity: .52; }
 :root[data-theme="light"] .flow-edge.is-lens .flow-ribbon-bed { opacity: .7; }
 :root[data-theme="light"] .flow-edge.is-focus .flow-ribbon-bed { opacity: .82; }
@@ -990,6 +1118,9 @@ button { color: inherit; }
 }
 .view-tab:focus-visible,
 .camera-controls button:focus-visible,
+.site-notice button:focus-visible,
+.legal-dialog button:focus-visible,
+.legal-dialog a:focus-visible,
 .close-inspector:focus-visible,
 .inspector-tab:focus-visible,
 .integration-accordion > summary:focus-visible,
@@ -1008,9 +1139,16 @@ button { color: inherit; }
 }
 
 @media (max-width: 760px) {
+  :root { --site-notice-height: 62px; }
   .flow-edge { --flow-scale: .72; }
   :root[data-theme="dark"] .flow-edge { --flow-scale: .52; }
-  .hud-header { top: 9px; left: 9px; right: 9px; }
+  .site-notice { gap: 8px; padding: 7px 9px; }
+  .site-notice-copy { display: grid; gap: 4px; }
+  .site-notice-copy span { font-size: .61rem; line-height: 1.22; }
+  .site-notice-actions { gap: 7px; }
+  .site-copyright { display: none; }
+  .site-notice button { min-height: 34px; padding-inline: 9px; font-size: .61rem; }
+  .hud-header { top: calc(var(--site-notice-height) + 8px); left: 9px; right: 9px; }
   .brand-panel { min-height: 50px; padding: 8px 10px; border-radius: 12px; }
   .brand-panel img { width: 94px; }
   .camera-controls { min-height: 50px; gap: 5px; padding: 6px; border-radius: 12px; }
@@ -1046,6 +1184,9 @@ button { color: inherit; }
 }
 
 @media (max-width: 460px) {
+  .site-notice-copy strong { font-size: .54rem; }
+  .site-notice-copy span { font-size: .57rem; }
+  .site-notice button { padding-inline: 8px; }
   .camera-controls button { font-size: .68rem; }
   .scene-status p { display: none; }
   .scene-status { width: auto; right: 9px; }
@@ -1056,6 +1197,10 @@ button { color: inherit; }
   .space-node.is-platform .node-label strong { font-size: 11.5px; }
   .inspector-tabs { grid-template-columns: 1fr 1.45fr; }
   .inspector-tab { padding-inline: 7px; font-size: .64rem; }
+  .legal-dialog { width: calc(100% - 18px); max-height: calc(100% - 18px); border-radius: 16px; }
+  .legal-dialog-header,
+  .legal-dialog-footer { padding: 15px; }
+  .legal-dialog-body { max-height: calc(100vh - 178px); padding: 15px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

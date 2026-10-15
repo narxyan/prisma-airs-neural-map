@@ -583,6 +583,8 @@ const inspector = document.querySelector("#inspector");
 const themeToggle = document.querySelector("#themeToggle");
 const brandLogo = document.querySelector("#brandLogo");
 const themeColor = document.querySelector('meta[name="theme-color"]');
+const legalDialog = document.querySelector("#legalDialog");
+const openLegalNotice = document.querySelector("#openLegalNotice");
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const state = {
@@ -1537,6 +1539,24 @@ themeToggle?.addEventListener("click", () => {
   applyTheme(root.dataset.theme === "light" ? "dark" : "light", true);
 });
 
+function closeLegalDialog() {
+  if (legalDialog?.open) legalDialog.close();
+}
+
+openLegalNotice?.addEventListener("click", () => {
+  if (legalDialog && !legalDialog.open) {
+    const dialogBody = legalDialog.querySelector(".legal-dialog-body");
+    if (dialogBody) dialogBody.scrollTop = 0;
+    legalDialog.showModal();
+  }
+});
+
+document.querySelector("#closeLegalNotice")?.addEventListener("click", closeLegalDialog);
+document.querySelector("#legalDone")?.addEventListener("click", closeLegalDialog);
+legalDialog?.addEventListener("click", (event) => {
+  if (event.target === legalDialog) closeLegalDialog();
+});
+
 systemTheme.addEventListener("change", (event) => {
   if (!savedTheme()) applyTheme(event.matches ? "dark" : "light");
 });
@@ -1545,7 +1565,7 @@ document.querySelector("#resetCamera").addEventListener("click", resetCamera);
 document.querySelector("#closeInspector").addEventListener("click", clearSelection);
 
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") clearSelection();
+  if (event.key === "Escape" && !legalDialog?.open) clearSelection();
 });
 
 window.addEventListener("resize", resize);

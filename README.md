@@ -2,6 +2,14 @@
 
 An interactive, responsive 3D map of the five official Prisma AIRS capability pillars and the documented workflows between them.
 
+## Independent project and licence
+
+This is a private, independent project by Narayan Soni. It is not an official Palo Alto Networks website and is not affiliated with, endorsed by, or sponsored by Palo Alto Networks. Technical content and code examples may be incomplete, outdated, or contain errors or omissions; validate them against the applicable official documentation before use.
+
+Copyright © 2026 Narayan Soni. All rights reserved. See [`LICENSE`](./LICENSE) for the repository terms. Palo Alto Networks and other third-party product names, documentation, logos, and trademarks are excluded from that licence and remain the property of their respective owners.
+
+The deployed site includes a concise privacy disclosure for its current behavior: no accounts, forms, advertising cookies, or embedded analytics SDK; browser-local theme storage; Cloudflare delivery and operational processing; and externally served Google Fonts.
+
 ## AIRS pillars
 
 - AI Red Teaming

@@ -13,13 +13,14 @@ const hostingPath = path.join(repositoryRoot, ".openai", "hosting.json");
 const workerPath = path.join(repositoryRoot, "worker", "index.js");
 const migrationPath = path.join(repositoryRoot, "drizzle", "0000_documentation_monitor.sql");
 const wranglerPath = path.join(repositoryRoot, "wrangler.jsonc");
+const licensePath = path.join(repositoryRoot, "LICENSE");
 
 const failures = [];
 const check = (condition, message) => {
   if (!condition) failures.push(message);
 };
 
-for (const file of [htmlPath, appPath, cssPath, workerPath, migrationPath, wranglerPath]) {
+for (const file of [htmlPath, appPath, cssPath, workerPath, migrationPath, wranglerPath, licensePath]) {
   check(existsSync(file), `Missing required file: ${path.relative(repositoryRoot, file)}`);
 }
 
@@ -33,6 +34,7 @@ if (!failures.length) {
   const worker = readFileSync(workerPath, "utf8");
   const migration = readFileSync(migrationPath, "utf8");
   const wrangler = JSON.parse(readFileSync(wranglerPath, "utf8"));
+  const license = readFileSync(licensePath, "utf8");
   const dataStart = app.indexOf("const COLORS");
   const dataEnd = app.indexOf("const byId");
 
@@ -139,6 +141,15 @@ if (!failures.length) {
   const cssVersion = html.match(/styles\.css\?v=(\d+)/)?.[1];
   const jsVersion = html.match(/app\.js\?v=(\d+)/)?.[1];
   check(cssVersion === jsVersion, "CSS and JavaScript cache-busting versions must match");
+  check(/Private site/.test(html) && /Not an official Palo Alto Networks website/.test(html), "The independent-project banner must remain visible");
+  check(/errors or omissions/i.test(html), "The banner must disclose possible errors and omissions");
+  check(/id="legalDialog"/.test(html) && /Legal notice &amp; privacy/.test(html), "The legal and privacy notice must remain available");
+  check(/Cloudflare processes technical request/.test(html) && /Google Fonts receives/.test(html), "The privacy notice must disclose active infrastructure providers");
+  check(/--notice-bg:/.test(css) && /:root\[data-theme="light"\][\s\S]*?--notice-bg:/.test(css), "The disclaimer must define readable dark and light theme surfaces");
+  check(/showModal\(\)/.test(app) && /closeLegalDialog/.test(app), "The legal notice dialog must be interactive");
+  check(/dialogBody\.scrollTop\s*=\s*0/.test(app), "The legal notice must reopen at the beginning of its content");
+  check(/Copyright © 2026 Narayan Soni/.test(license) && /All rights reserved/.test(license), "The repository licence must preserve Narayan Soni's copyright");
+  check(/Palo Alto Networks[\s\S]*trademarks/.test(license), "The repository licence must exclude third-party trademarks");
   check(/\.space-stage\s*\{[\s\S]*?overflow:\s*clip;/.test(css), "The graph stage must not become a scroll container");
   check(/responsiveIconScale\s*\*\s*\.82/.test(app), "The compact node-icon scale must remain enabled");
   check(/stage\.addEventListener\("scroll",\s*resetStageScroll/.test(app), "The graph stage must reset unexpected focus scrolling");
@@ -176,4 +187,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("Site checks passed: AIRS graph integrity, responsive inspector content, official docs, Worker monitor, MCP writer, persistence, assets, and metadata verified.");
+console.log("Site checks passed: AIRS graph integrity, responsive inspector content, legal notice, official docs, Worker monitor, MCP writer, persistence, assets, and metadata verified.");
